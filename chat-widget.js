@@ -86,13 +86,21 @@ function createWidget() {
   welcome.id = 'welcome-overlay';
   welcome.innerHTML = `
     <div id="welcome-card">
-      <img src="${AVATAR_IMG}" alt="${AGENT_NAME}" id="welcome-avatar">
-      <h2 id="welcome-title">Welcome to Project Drive Thru</h2>
-      <p id="welcome-subtitle">Before we get started, I'd love to know who I'm speaking with so I can tailor the experience.</p>
-      <input type="text" id="welcome-name" placeholder="Enter your name" autofocus onkeydown="if(event.key==='Enter')document.getElementById('welcome-voice-section').style.display='block'">
 
-      <div id="welcome-voice-section" style="display:none">
-        <p style="font-size:13px;color:rgba(255,255,255,0.7);margin:16px 0 10px;text-align:center">Tailor ${AGENT_NAME}'s voice</p>
+      <!-- SCREEN 1: Name entry -->
+      <div id="welcome-screen-1">
+        <img src="${AVATAR_IMG}" alt="${AGENT_NAME}" id="welcome-avatar">
+        <h2 id="welcome-title">Welcome to Project Drive Thru</h2>
+        <p id="welcome-subtitle">Before we get started, I'd love to know who I'm speaking with so I can tailor the experience.</p>
+        <input type="text" id="welcome-name" placeholder="Enter your name" autofocus onkeydown="if(event.key==='Enter')window.__welcomeNext()">
+        <button class="welcome-action-btn" onclick="window.__welcomeNext()">Next</button>
+      </div>
+
+      <!-- SCREEN 2: Voice customization -->
+      <div id="welcome-screen-2" style="display:none">
+        <img src="${AVATAR_IMG}" alt="${AGENT_NAME}" id="welcome-avatar-2" class="welcome-avatar-speaking">
+        <h2 id="welcome-title">Tailor ${AGENT_NAME}'s Voice</h2>
+        <p id="welcome-subtitle" style="margin-bottom:20px">Adjust how I sound — pick a style and speed, then preview.</p>
 
         <div class="voice-option-group">
           <label class="voice-label">Style</label>
@@ -113,16 +121,15 @@ function createWidget() {
           <div class="voice-speed-val" id="voice-speed-display">1.15×</div>
         </div>
 
-        <div style="display:flex;gap:10px;margin-top:14px">
-          <button class="voice-preview-btn" onclick="window.__previewVoice()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-            Preview Voice
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <button class="welcome-preview-btn" onclick="window.__previewVoice()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+            Preview
           </button>
-          <button id="welcome-btn" onclick="window.__welcomeSubmit()">Let's Go</button>
+          <button class="welcome-action-btn" onclick="window.__welcomeSubmit()">Let's Go</button>
         </div>
       </div>
 
-      <button id="welcome-name-next" onclick="window.__welcomeNext()" style="margin-top:12px">Next</button>
     </div>
   `;
   document.body.appendChild(welcome);
@@ -140,15 +147,16 @@ function showWelcome() {
   }, 800);
 }
 
-// Step 1: User clicks "Next" after entering name — intro speech plays, voice controls appear
+// Step 1: User clicks "Next" after entering name — swap to screen 2, speak intro
 function welcomeNext() {
   const nameInput = document.getElementById('welcome-name');
   const name = (nameInput ? nameInput.value.trim() : '') || 'there';
+  userName = name;
   const isChris = /^chris$/i.test(name);
 
-  // Show voice customization section, hide Next button
-  document.getElementById('welcome-voice-section').style.display = 'block';
-  document.getElementById('welcome-name-next').style.display = 'none';
+  // Swap screens
+  document.getElementById('welcome-screen-1').style.display = 'none';
+  document.getElementById('welcome-screen-2').style.display = 'block';
 
   // Speak the intro immediately
   if (isChris) {
