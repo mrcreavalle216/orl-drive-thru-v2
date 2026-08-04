@@ -336,8 +336,8 @@ module.exports = async function handler(req, res) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-5',
-        max_tokens: 1500,
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4096,
         stream: true,
         system: SYSTEM_PROMPT,
         messages: trimmedMessages
@@ -359,26 +359,32 @@ module.exports = async function handler(req, res) {
     const decoder = new TextDecoder();
     let buffer = '';
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop(); // keep incomplete line
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // keep incomplete line
 
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6);
-          if (data === '[DONE]') continue;
-          try {
-            const parsed = JSON.parse(data);
-            if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
-              res.write(`data: ${JSON.stringify({ text: parsed.delta.text })}\n\n`);
-            }
-          } catch (_) {}
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+                res.write(`data: ${JSON.stringify({ text: parsed.delta.text })}\n\n`);
+              }
+            } catch (_) {}
+          }
         }
       }
+    } catch (streamErr) {
+      console.error('Stream read error:', streamErr);
+      // Send error event so client can detect the break
+      res.write(`data: ${JSON.stringify({ error: 'stream_interrupted' })}\n\n`);
     }
 
     res.write('data: [DONE]\n\n');

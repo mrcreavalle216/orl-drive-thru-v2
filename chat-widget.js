@@ -906,7 +906,9 @@ async function sendMessage() {
           if (payload === '[DONE]') continue;
           try {
             const parsed = JSON.parse(payload);
-            if (parsed.text) {
+            if (parsed.error) {
+              console.warn('Stream error from server:', parsed.error);
+            } else if (parsed.text) {
               fullText += parsed.text;
               bubble.innerHTML = formatText(fullText);
               container.scrollTop = container.scrollHeight;
@@ -916,8 +918,16 @@ async function sendMessage() {
       }
     }
 
-    // Store in message history
+    // Detect truncated / empty responses
     const cleaned = processCommands(fullText);
+    if (cleaned.replace(/\s/g, '').length < 15) {
+      // Response was too short — likely a stream failure
+      div.remove();
+      addMessage('assistant', "Hmm, my response got cut short. Let me try that again — ask me one more time?");
+      return;
+    }
+
+    // Store in message history
     messages.push({ role: 'assistant', content: cleaned });
     saveHistory();
     bubble.innerHTML = formatText(cleaned);
