@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORL Drive Thru — 3-Year Model Comparison</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="pw-gate">
+<div class="pw-box">
+<h2>ORL Project Drive Thru</h2>
+<p>Enter access code to view this proposal.</p>
+<input type="password" id="pw-input" placeholder="Access Code" autofocus onkeydown="if(event.key==='Enter')checkPw()">
+<br>
+<button onclick="checkPw()">Submit</button>
+<div class="pw-error" id="pw-error"></div>
+</div>
+</div>
+
+<div id="main-content" style="display:none">
+
+<!-- Neural network particle background -->
+<canvas id="bg-canvas"></canvas>
+
+<div class="hero">
+<h1>ORL Project Drive Thru</h1>
+<div class="subtitle">3-Year AI Platform Investment &mdash; Model Comparison</div>
+<div class="label">Prepared for ORL</div>
+</div>
+
+<div class="tab-bar">
+<button class="tab-btn active active-sub" onclick="switchTab('sub')">Subscription</button>
+<button class="tab-btn" onclick="switchTab('otp')">Ownership</button>
+</div>
+
+<div class="container">
+
+<!-- TAB 1: SUBSCRIPTION -->
+<div class="tab-content active" id="tab-sub">
+<div class="summary-row" id="subSummary"></div>
+<h2 class="section-title" id="sec-sub-agents">Per-Agent Deployment &amp; Pricing</h2>
+<div class="agent-grid" id="subAgentGrid"></div>
+<h2 class="section-title" id="sec-sub-features">Initial Feature Set by Agent</h2>
+<div class="feature-grid" id="subFeatureGrid"></div>
+<h2 class="section-title" id="sec-sub-chart">Monthly Revenue by Agent</h2>
+<div class="chart-wrap"><canvas id="subChart"></canvas></div>
+<h2 class="section-title" id="sec-sub-annual">Annual Summary</h2>
+<div class="year-summary" id="subYearSummary"></div>
+<h2 class="section-title" id="sec-sub-monthly">Month-by-Month Breakdown</h2>
+<div class="table-wrap">
+<table>
+<thead><tr>
+<th>Mo</th><th>Date</th><th>Stella</th><th>Iris</th><th>Nora</th><th>Sage</th><th>Paige</th><th>Knox</th><th>Atlas</th><th>Maven</th><th>Monthly</th><th>Cumulative</th>
+</tr></thead>
+<tbody id="subTableBody"></tbody>
+</table>
+</div>
+<div class="notes">
+<h3>Subscription Model Assumptions</h3>
+<p><strong>Foundation fee:</strong> $40,000 one-time platform setup (billed at contract signing), not included in monthly figures.</p>
+<p><strong>Renewal:</strong> 20% reduction across all agents effective Month 25 (Sep 2028) after 24-month initial term.</p>
+<p><strong>Fully managed:</strong> Subscription includes all infrastructure, monitoring, optimization, model upgrades, and operational support. No AI staffing or infrastructure management required by ORL.</p>
+<p><strong>Early termination:</strong> 18 Month Lock-In Required. 60-day written notice required after 18 months and Penalty of 50% of the then-current monthly subscription rate for each remaining month on the contract up to 24 months.</p>
+<p><strong>Source:</strong> Subscription rates per Insight pricing model; phased deployment per project plan.</p>
+</div>
+</div>
+
+<!-- TAB 2: ONE-TIME -->
+<div class="tab-content" id="tab-otp">
+<div class="summary-row" id="otpSummary"></div>
+<h2 class="section-title" id="sec-otp-agents">Per-Agent Estimated Build Cost &amp; Delivery</h2>
+<div class="agent-grid" id="otpAgentGrid"></div>
+<h2 class="section-title" id="sec-otp-features">Initial Feature Set by Agent</h2>
+<div class="feature-grid" id="otpFeatureGrid"></div>
+<h2 class="section-title" id="sec-otp-chart">Estimated 3-Year Cost of Ownership</h2>
+<div class="chart-wrap"><canvas id="otpChart"></canvas></div>
+<h2 class="section-title" id="sec-otp-annual">Annual Summary</h2>
+<div class="year-summary" id="otpYearSummary"></div>
+<h2 class="section-title" id="sec-otp-monthly">Estimated Month-by-Month Cost Breakdown</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th rowspan="2" style="vertical-align:bottom">Mo</th><th rowspan="2" style="vertical-align:bottom">Date</th><th rowspan="2" style="vertical-align:bottom;color:#d4a017">Build Payment</th><th colspan="8" style="color:#999;text-align:center;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding-bottom:4px;font-weight:500;border-bottom:1px solid rgba(153,153,153,0.3)">Estimated Token Usage</th><th rowspan="2" style="vertical-align:bottom;color:#999">Est. Tokens</th><th rowspan="2" style="vertical-align:bottom;color:#999">Est. Infra</th><th rowspan="2" style="vertical-align:bottom;color:#d4a017">Maintenance</th><th rowspan="2" style="vertical-align:bottom">Monthly</th><th rowspan="2" style="vertical-align:bottom">Est. Cumulative</th>
+</tr>
+<tr>
+<th style="color:#999;font-weight:400;font-size:11px">Stella</th><th style="color:#999;font-weight:400;font-size:11px">Iris</th><th style="color:#999;font-weight:400;font-size:11px">Nora</th><th style="color:#999;font-weight:400;font-size:11px">Sage</th><th style="color:#999;font-weight:400;font-size:11px">Paige</th><th style="color:#999;font-weight:400;font-size:11px">Knox</th><th style="color:#999;font-weight:400;font-size:11px">Atlas</th><th style="color:#999;font-weight:400;font-size:11px">Maven</th>
+</tr>
+</thead>
+<tbody id="otpTableBody"></tbody>
+</table>
+</div>
+<div class="notes">
+<h3>One-Time Model Assumptions (All Ongoing Costs Are Estimates)</h3>
+<p><strong>Cost structure:</strong> Build and maintenance are billed by Insight. Infrastructure and token costs are estimated client-direct expenses paid by ORL to cloud and API providers.</p>
+<p><strong>Build payment:</strong> Agent build costs ($463,000 total) billed at phase delivery milestones. No separate platform or foundation fee.</p>
+<p><strong>Estimated maintenance:</strong> First 2 months FREE. Starting M3, ~$600/mo per live agent, scaling with deployment — $1,800 (M3) to $4,800/mo at full deployment (M9+). Covers monitoring, patching, model updates, incident response, and ongoing provider enhancements. All maintenance figures are estimates and may vary based on actual usage and complexity.</p>
+<p><strong>Estimated enhancements:</strong> All enhancement figures will be estimated upon submission of change requests and may vary based on actual usage and complexity.</p>
+<p><strong>Estimated client infrastructure (paid by ORL):</strong> Azure compute, APIM, Twilio, ElevenLabs, identity verification APIs. Estimated to ramp from ~$320/mo (M1) to ~$3,040/mo (Y2+) as agents deploy and call volume grows. Based on 5-layer architecture estimate sized for ORL's current volume of ~66,750 total calls/mo (~6,400 CES calls/mo) and associated document throughput. Actual costs may vary based on call volume, document throughput, and vendor pricing changes.</p>
+<p><strong>Estimated token costs (paid by ORL):</strong> ~$985/mo estimated at full deployment for Claude API inference. Modeled on ORL's current call volume (~6,400 CES calls/mo, ~66,750 total calls/mo) and document processing load across all 8 agents. Actual token usage will depend on transaction volume, query complexity, and model selection.</p>
+<p><strong>Code ownership:</strong> ORL owns the codebase. Insight provides maintenance as a service, not managed ops.</p>
+</div>
+</div>
+
+<!-- COMPARISON (visible on both tabs) -->
+<h2 class="section-title" id="sec-compare">Model Comparison — Estimated 3-Year Total Cost</h2>
+<div class="compare-grid" id="compareGrid"></div>
+<h2 class="section-title" id="sec-compare-chart">Cumulative Cost Over 36 Months</h2>
+<div class="chart-wrap"><canvas id="compareChart"></canvas></div>
+<h2 class="section-title" id="sec-payback">Per-Agent Payback Analysis</h2>
+<p style="font-size:13px;color:var(--gray);margin-bottom:14px;">Months of subscription payments to equal the one-time purchase price for each agent. The 24-month contract line is shown for reference.</p>
+<div class="payback-grid" id="paybackGrid"></div>
+<div class="chart-wrap"><canvas id="paybackChart"></canvas></div>
+
+</div><!-- end container -->
+
+<div class="footer">
+  Insight Consultants &mdash; Prepared for ORL &mdash; Generated July 2026 &mdash; Confidential
+</div>
+
+</div><!-- end main-content -->
+
+<script src="agents.js"></script>
+<script src="particles.js"></script>
+<script src="tour.js"></script>
+<script src="chat-widget.js"></script>
+<script src="charts.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
