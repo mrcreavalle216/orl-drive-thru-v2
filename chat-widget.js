@@ -88,7 +88,7 @@ function createWidget() {
     <div id="welcome-card">
       <img src="${AVATAR_IMG}" alt="${AGENT_NAME}" id="welcome-avatar">
       <h2 id="welcome-title">Welcome to Project Drive Thru</h2>
-      <p id="welcome-subtitle">Before we get started, I'd love to know who I'm speaking with.</p>
+      <p id="welcome-subtitle">Before we get started, I'd love to know who I'm speaking with so I can tailor the experience.</p>
       <input type="text" id="welcome-name" placeholder="Enter your name" autofocus onkeydown="if(event.key==='Enter')document.getElementById('welcome-voice-section').style.display='block'">
 
       <div id="welcome-voice-section" style="display:none">
@@ -192,7 +192,12 @@ function setVoiceSpeed(val) {
 
 function previewVoice() {
   const name = (document.getElementById('welcome-name').value.trim()) || 'there';
-  speakText(`Hi ${name}, I'm Stella. This is how I'll sound during our conversation. How's this?`);
+  const isChris = /^chris$/i.test(name);
+  if (isChris) {
+    speakText(`Hey Chris, so I heard you might not like my voice, and some chick named Cosmos A.I. thinks she's superior to me? Like, what type of name is Cosmos A.I.? Anyway — adjust my style and speed until I sound just right, and I'll show you what a real A.I. advisor can do.`);
+  } else {
+    speakText(`Hi ${name}, I'm Stella. This is how I'll sound during our conversation. Adjust the style and speed until it feels right — I'm flexible like that.`);
+  }
 }
 
 window.__setVoiceStyle = setVoiceStyle;
