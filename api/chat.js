@@ -82,7 +82,7 @@ module.exports = async function handler(req, res) {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2025-04-15'
       },
       body: JSON.stringify({
         model: 'claude-sonnet-5',
@@ -99,7 +99,14 @@ module.exports = async function handler(req, res) {
     }
 
     const data = await response.json();
-    const content = data.content?.[0]?.text || 'Sorry, I couldn\'t generate a response.';
+    // Find the text block — some models return thinking blocks before text
+    const textBlock = data.content?.find(b => b.type === 'text');
+    const content = textBlock?.text || data.content?.[0]?.text || '';
+
+    if (!content) {
+      console.error('Empty response from API:', JSON.stringify(data).slice(0, 500));
+      return res.status(200).json({ content: 'Sorry, I couldn\'t generate a response. Please try again.', debug: data.stop_reason });
+    }
 
     return res.status(200).json({ content });
   } catch (err) {
