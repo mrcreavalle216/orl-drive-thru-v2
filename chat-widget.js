@@ -13,17 +13,6 @@ let displayOpen = false;
 let userName = '';
 let voiceEnabled = true;
 let currentAudio = null;
-let audioCtx = null;
-
-// Unlock Web Audio on any user interaction (required by Chrome autoplay policy)
-function ensureAudioContext() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-}
 
 // ─── Create Widget ──────────────────────────────────────────
 
@@ -384,9 +373,6 @@ function hideTyping() {
 // ─── Send Message ───────────────────────────────────────────
 
 async function sendMessage() {
-  // Unlock audio in user gesture context (before any await)
-  if (voiceEnabled) ensureAudioContext();
-
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   if (!text || isTyping) return;
@@ -444,14 +430,20 @@ function toggleVoice() {
   }
 }
 
+// Persistent audio element — lives in the DOM so Chrome trusts it
+const audioEl = document.createElement('audio');
+audioEl.id = 'stella-voice';
+audioEl.style.display = 'none';
+document.documentElement.appendChild(audioEl);
+
 async function speakText(text) {
-  // Stop any currently playing audio
+  // Stop current playback
+  audioEl.pause();
+  audioEl.currentTime = 0;
   if (currentAudio) {
-    try { currentAudio.stop(); } catch (_) {}
+    URL.revokeObjectURL(currentAudio);
     currentAudio = null;
   }
-
-  if (!audioCtx) ensureAudioContext();
 
   try {
     const res = await fetch('/api/tts', {
@@ -465,23 +457,23 @@ async function speakText(text) {
       return;
     }
 
-    // Check voice still enabled after fetch
     if (!voiceEnabled) return;
 
-    const arrayBuffer = await res.arrayBuffer();
-    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    currentAudio = url;
 
-    // Check again after decode
-    if (!voiceEnabled) return;
-
-    const source = audioCtx.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(audioCtx.destination);
-    source.onended = () => {
-      if (currentAudio === source) currentAudio = null;
+    audioEl.src = url;
+    audioEl.onended = () => {
+      URL.revokeObjectURL(url);
+      if (currentAudio === url) currentAudio = null;
     };
-    currentAudio = source;
-    source.start(0);
+
+    try {
+      await audioEl.play();
+    } catch (playErr) {
+      console.warn('Voice play blocked — click the speaker icon to retry.', playErr.message);
+    }
   } catch (err) {
     console.warn('TTS error:', err);
   }
