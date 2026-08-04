@@ -106,7 +106,8 @@
 .call-modal-overlay.show-computer .call-modal-options,
 .call-modal-overlay.show-phone .call-modal-options{display:none}
 .call-modal-overlay.show-computer .call-modal{max-width:520px}
-.call-iframe-wrap{border-radius:16px;overflow:hidden;border:1px solid rgba(100,180,255,0.15);margin-bottom:16px;background:rgba(0,0,0,0.3)}
+.call-widget-wrap{min-height:400px;margin-bottom:16px;position:relative;display:flex;align-items:center;justify-content:center}
+.call-widget-wrap elevenlabs-convai{width:100%}
 .call-back-btn{background:none;border:none;color:rgba(200,210,230,0.5);font-size:13px;cursor:pointer;padding:8px 0;font-family:inherit;transition:color 0.2s}.call-back-btn:hover{color:#fff}
 
 /* ── Orbital Graphic ──────────────────────────────────────── */
