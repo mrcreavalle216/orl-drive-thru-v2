@@ -98,7 +98,7 @@ function createWidget() {
 
       <!-- SCREEN 2: Voice customization -->
       <div id="welcome-screen-2" style="display:none">
-        <img src="${AVATAR_IMG}" alt="${AGENT_NAME}" id="welcome-avatar-2" class="welcome-avatar-speaking">
+        <img src="${AVATAR_IMG}" alt="${AGENT_NAME}" id="welcome-avatar-2">
         <h2 id="welcome-title">Tailor ${AGENT_NAME}'s Voice</h2>
         <p id="welcome-subtitle" style="margin-bottom:20px">Adjust how I sound — pick a style and speed, then preview.</p>
 
@@ -121,7 +121,7 @@ function createWidget() {
           <div class="voice-speed-val" id="voice-speed-display">1.15×</div>
         </div>
 
-        <div style="display:flex;gap:10px;margin-top:20px">
+        <div class="welcome-btn-row">
           <button class="welcome-preview-btn" onclick="window.__previewVoice()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
             Preview
