@@ -1331,16 +1331,22 @@ window.__chatMic = toggleMic;
 window.__copyRecap = copyRecap;
 
 // ─── Presentation Mode ────────────────────────────────────
-// Ctrl+Shift+H (or Cmd+Shift+H) toggles Stella visibility
+// Toggle button in bottom-left to hide/show Stella
 // ?presentation in URL starts with Stella hidden
 let stellaHidden = false;
 
 function toggleStellaVisibility() {
   stellaHidden = !stellaHidden;
   const widget = document.getElementById('chat-widget');
+  const btn = document.getElementById('stella-toggle');
   if (!widget) return;
   widget.style.display = stellaHidden ? 'none' : '';
-  // Also close panel if hiding
+  if (btn) {
+    btn.innerHTML = stellaHidden
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    btn.title = stellaHidden ? 'Show Stella' : 'Hide Stella';
+  }
   if (stellaHidden && chatOpen) {
     chatOpen = false;
     const panel = document.getElementById('chat-panel');
@@ -1348,23 +1354,41 @@ function toggleStellaVisibility() {
   }
 }
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'F2') {
-    e.preventDefault();
-    toggleStellaVisibility();
-  }
-});
+function createStellaToggle() {
+  const btn = document.createElement('button');
+  btn.id = 'stella-toggle';
+  btn.title = 'Hide Stella';
+  btn.onclick = toggleStellaVisibility;
+  btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  Object.assign(btn.style, {
+    position: 'fixed', bottom: '24px', left: '24px', zIndex: '99999',
+    width: '40px', height: '40px', borderRadius: '50%',
+    background: 'rgba(15,20,40,0.7)', border: '1px solid rgba(100,180,255,0.2)',
+    color: 'rgba(200,210,230,0.5)', cursor: 'pointer', display: 'flex',
+    alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)',
+    transition: 'all 0.25s', padding: '0'
+  });
+  btn.onmouseenter = () => { btn.style.color = '#fff'; btn.style.borderColor = 'rgba(100,180,255,0.5)'; };
+  btn.onmouseleave = () => { btn.style.color = 'rgba(200,210,230,0.5)'; btn.style.borderColor = 'rgba(100,180,255,0.2)'; };
+  document.body.appendChild(btn);
+}
 
 window.__toggleStella = toggleStellaVisibility;
 
 // Create widget after DOM is ready
 function initWidget() {
   createWidget();
+  createStellaToggle();
   // Auto-hide in presentation mode
   if (window.location.search.includes('presentation')) {
     stellaHidden = true;
     const widget = document.getElementById('chat-widget');
     if (widget) widget.style.display = 'none';
+    const btn = document.getElementById('stella-toggle');
+    if (btn) {
+      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+      btn.title = 'Show Stella';
+    }
   }
 }
 
