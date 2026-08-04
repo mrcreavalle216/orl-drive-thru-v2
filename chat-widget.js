@@ -1,11 +1,15 @@
 // ─── Chat Widget v2 ─────────────────────────────────────────
 // Avatar-based agent with site interaction for ORL Drive Thru
+// Features: voice TTS, mic input, display panel, speaking indicator,
+// stop-on-input, chat persistence, dynamic suggestions, scroll
+// reactions, copy recap, sound design, guided tour integration
 
 (function() {
 
 const AVATAR_IMG = 'images/stella.png';
 const AGENT_NAME = 'Stella';
 
+// ─── State ─────────────────────────────────────────────────
 let chatOpen = false;
 let messages = [];
 let isTyping = false;
@@ -15,6 +19,146 @@ let voiceEnabled = true;
 let currentAudio = null;
 let voiceSpeed = 1.15;
 let voiceStyle = 'balanced'; // balanced, warm, energetic
+let isSpeaking = false;
+let scrollReactedSections = new Set();
+
+// ─── Sound Design (Web Audio API) ──────────────────────────
+
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playSound(type) {
+  try {
+    const ctx = getAudioCtx();
+    if (type === 'open') {
+      // Chat open: soft ascending chime
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.08, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      g.connect(ctx.destination);
+      const o = ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(523, ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(784, ctx.currentTime + 0.15);
+      o.connect(g);
+      o.start(ctx.currentTime);
+      o.stop(ctx.currentTime + 0.4);
+    } else if (type === 'send') {
+      // Message send: soft pop
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.1, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+      g.connect(ctx.destination);
+      const o = ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(880, ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.08);
+      o.connect(g);
+      o.start(ctx.currentTime);
+      o.stop(ctx.currentTime + 0.15);
+    } else if (type === 'display') {
+      // Display panel: resonant tone with harmonic
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.06, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+      g.connect(ctx.destination);
+      const o = ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(440, ctx.currentTime);
+      o.connect(g);
+      o.start(ctx.currentTime);
+      o.stop(ctx.currentTime + 0.6);
+      const g2 = ctx.createGain();
+      g2.gain.setValueAtTime(0.03, ctx.currentTime);
+      g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+      g2.connect(ctx.destination);
+      const o2 = ctx.createOscillator();
+      o2.type = 'sine';
+      o2.frequency.setValueAtTime(660, ctx.currentTime);
+      o2.connect(g2);
+      o2.start(ctx.currentTime);
+      o2.stop(ctx.currentTime + 0.5);
+    } else if (type === 'notification') {
+      // Scroll reaction: gentle ding
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.06, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      g.connect(ctx.destination);
+      const o = ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(698, ctx.currentTime);
+      o.connect(g);
+      o.start(ctx.currentTime);
+      o.stop(ctx.currentTime + 0.3);
+    }
+  } catch (e) {}
+}
+
+// ─── Stop Speaking Helper ──────────────────────────────────
+
+function stopSpeaking() {
+  if (currentAudio) {
+    audioEl.pause();
+    audioEl.currentTime = 0;
+    URL.revokeObjectURL(currentAudio);
+    currentAudio = null;
+  }
+  isSpeaking = false;
+  const fab = document.getElementById('chat-fab');
+  if (fab) fab.classList.remove('speaking');
+}
+
+// ─── Chat History Persistence ──────────────────────────────
+
+function saveHistory() {
+  try {
+    sessionStorage.setItem('stella-chat-history', JSON.stringify(messages));
+    sessionStorage.setItem('stella-chat-user', userName);
+  } catch (e) {}
+}
+
+function loadHistory() {
+  try {
+    const saved = sessionStorage.getItem('stella-chat-history');
+    const savedUser = sessionStorage.getItem('stella-chat-user');
+    if (saved) {
+      messages = JSON.parse(saved);
+      if (savedUser) userName = savedUser;
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+function clearHistory() {
+  messages = [];
+  try {
+    sessionStorage.removeItem('stella-chat-history');
+    sessionStorage.removeItem('stella-chat-user');
+  } catch (e) {}
+}
+
+function rebuildChatFromHistory() {
+  const container = document.getElementById('chat-messages');
+  if (!container || messages.length === 0) return;
+  container.innerHTML = '';
+  messages.forEach(m => {
+    const div = document.createElement('div');
+    div.className = `chat-msg ${m.role}`;
+    if (m.role === 'assistant') {
+      div.innerHTML = `<img src="${AVATAR_IMG}" alt="${AGENT_NAME}" class="chat-msg-avatar"><div class="chat-bubble">${formatText(m.content)}</div>`;
+    } else {
+      div.innerHTML = `<div class="chat-bubble">${formatText(m.content)}</div>`;
+    }
+    container.appendChild(div);
+  });
+  container.scrollTop = container.scrollHeight;
+  const suggestions = document.getElementById('chat-suggestions');
+  if (suggestions) suggestions.style.display = 'none';
+}
 
 // ─── Create Widget ──────────────────────────────────────────
 
@@ -22,6 +166,7 @@ function createWidget() {
   const widget = document.createElement('div');
   widget.id = 'chat-widget';
   widget.innerHTML = `
+    <div id="stella-scroll-bubble" class="scroll-bubble"></div>
     <button id="chat-fab" onclick="window.__chatToggle()" title="Ask ${AGENT_NAME}">
       <img id="chat-fab-avatar" src="${AVATAR_IMG}" alt="${AGENT_NAME}">
       <div id="chat-fab-pulse"></div>
@@ -36,6 +181,9 @@ function createWidget() {
             <div style="font-size:11px;opacity:0.6">AI Advisor &bull; Ask me anything about this proposal</div>
           </div>
         </div>
+        <button id="chat-recap-btn" onclick="window.__copyRecap()" title="Copy conversation recap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
         <button id="chat-voice-btn" onclick="window.__toggleVoice()" title="Toggle voice">
           <svg id="voice-icon-on" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path></svg>
           <svg id="voice-icon-off" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"></path></svg>
@@ -53,6 +201,7 @@ function createWidget() {
         <button class="chat-suggest" onclick="window.__chatQuick('What\\'s the ROI on subscription?')">ROI Analysis</button>
         <button class="chat-suggest" onclick="window.__chatQuick('Compare the two models')">Compare Models</button>
       </div>
+      <div id="chat-dynamic-suggestions"></div>
       <div id="chat-input-area">
         <button id="chat-mic" onclick="window.__chatMic()" title="Hold to speak">
           <svg id="mic-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path></svg>
@@ -86,6 +235,11 @@ function createWidget() {
     <div id="agent-display-content"></div>
   `;
   document.body.appendChild(display);
+
+  // Toast notification
+  const toast = document.createElement('div');
+  toast.id = 'stella-toast';
+  document.body.appendChild(toast);
 
   // Create welcome popup
   const welcome = document.createElement('div');
@@ -139,11 +293,30 @@ function createWidget() {
     </div>
   `;
   document.body.appendChild(welcome);
+
+  // Setup input listener to stop speaking when user types
+  setTimeout(() => {
+    const input = document.getElementById('chat-input');
+    if (input) {
+      input.addEventListener('input', () => {
+        if (isSpeaking) stopSpeaking();
+      });
+    }
+  }, 100);
 }
 
 // ─── Welcome Popup ──────────────────────────────────────────
 
 function showWelcome() {
+  // If chat history exists from this session, skip welcome
+  if (loadHistory()) {
+    const overlay = document.getElementById('welcome-overlay');
+    if (overlay) overlay.remove();
+    rebuildChatFromHistory();
+    setupScrollObserver();
+    return;
+  }
+
   const overlay = document.getElementById('welcome-overlay');
   if (!overlay) return;
   setTimeout(() => overlay.classList.add('open'), 400);
@@ -237,6 +410,17 @@ async function submitWelcome() {
   div.innerHTML = `<img src="${AVATAR_IMG}" alt="${AGENT_NAME}" class="chat-msg-avatar"><div class="chat-bubble">${greeting}</div>`;
   msgContainer.appendChild(div);
 
+  // Save greeting to history
+  messages = [{ role: 'assistant', content: greeting }];
+  saveHistory();
+
+  // Show post-welcome suggestions including tour
+  showDynamicSuggestions([
+    'Take the Guided Tour',
+    'Show me a 5-year cost comparison',
+    'What makes you different from Cosmos AI?'
+  ]);
+
   // Auto-open chat after welcome, then speak the greeting
   if (!chatOpen) {
     setTimeout(() => {
@@ -246,6 +430,9 @@ async function submitWelcome() {
   } else {
     if (voiceEnabled) speakText(greeting);
   }
+
+  // Setup scroll observer now that welcome is done
+  setupScrollObserver();
 }
 
 window.__welcomeNext = welcomeNext;
@@ -269,6 +456,7 @@ function toggleChat() {
     panel.classList.add('open');
     fab.classList.add('active');
     badge.style.display = 'none';
+    playSound('open');
     setTimeout(() => document.getElementById('chat-input').focus(), 300);
   } else {
     panel.classList.remove('open');
@@ -279,6 +467,14 @@ function toggleChat() {
 // ─── Quick Suggestion ───────────────────────────────────────
 
 function quickSend(text) {
+  // Handle tour trigger
+  if (/take the guided tour/i.test(text)) {
+    if (typeof window.__tourStart === 'function') {
+      if (chatOpen) toggleChat();
+      window.__tourStart();
+      return;
+    }
+  }
   if (!chatOpen) toggleChat();
   setTimeout(() => {
     document.getElementById('chat-input').value = text;
@@ -290,6 +486,7 @@ function quickSend(text) {
 
 function addMessage(role, text) {
   messages.push({ role, content: text });
+  saveHistory();
   const container = document.getElementById('chat-messages');
   const div = document.createElement('div');
   div.className = `chat-msg ${role}`;
@@ -308,14 +505,20 @@ function addMessage(role, text) {
   if (role === 'user' && suggestions) {
     suggestions.style.display = 'none';
   }
+  // Clear dynamic suggestions on new user message
+  if (role === 'user') {
+    const dynSug = document.getElementById('chat-dynamic-suggestions');
+    if (dynSug) dynSug.innerHTML = '';
+  }
 }
 
 // ─── Process Agent Commands ─────────────────────────────────
-// Commands embedded in responses: {{SWITCH_TAB:sub}}, {{SCROLL_TO:#id}}, {{HIGHLIGHT:#id}}
+// Commands embedded in responses: {{SWITCH_TAB:sub}}, {{SCROLL_TO:#id}}, {{HIGHLIGHT:#id}}, {{SUGGESTIONS:a|b|c}}
 
 function processCommands(text) {
   let cleaned = text;
   const commands = [];
+  let pendingSuggestions = [];
 
   // Extract {{SWITCH_TAB:xxx}}
   cleaned = cleaned.replace(/\{\{SWITCH_TAB:(\w+)\}\}/g, (_, tab) => {
@@ -338,6 +541,12 @@ function processCommands(text) {
   // Extract display tables: {{DISPLAY}}...{{/DISPLAY}}
   cleaned = cleaned.replace(/\{\{DISPLAY\}\}([\s\S]*?)\{\{\/DISPLAY\}\}/g, (_, content) => {
     commands.push({ type: 'display', content: content.trim() });
+    return '';
+  });
+
+  // Extract {{SUGGESTIONS:text1|text2|text3}}
+  cleaned = cleaned.replace(/\{\{SUGGESTIONS:(.*?)\}\}/g, (_, list) => {
+    pendingSuggestions = list.split('|').map(s => s.trim()).filter(Boolean);
     return '';
   });
 
@@ -368,7 +577,30 @@ function processCommands(text) {
     }
   });
 
+  // Show dynamic follow-up suggestions
+  if (pendingSuggestions.length > 0) {
+    setTimeout(() => showDynamicSuggestions(pendingSuggestions), 300);
+  }
+
   return cleaned.trim();
+}
+
+// ─── Dynamic Follow-Up Suggestions ─────────────────────────
+
+function showDynamicSuggestions(suggestions) {
+  const container = document.getElementById('chat-dynamic-suggestions');
+  if (!container) return;
+  container.innerHTML = '';
+  suggestions.forEach(text => {
+    const btn = document.createElement('button');
+    btn.className = 'chat-dynamic-suggest';
+    btn.textContent = text;
+    btn.onclick = () => {
+      container.innerHTML = '';
+      quickSend(text);
+    };
+    container.appendChild(btn);
+  });
 }
 
 // ─── Display Panel (renders tables on the page) ─────────────
@@ -390,6 +622,7 @@ function showDisplay(content) {
   panel.classList.add('open');
   if (bk) bk.classList.add('open');
   displayOpen = true;
+  playSound('display');
 }
 
 function closeDisplay() {
@@ -509,9 +742,13 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text || isTyping) return;
 
+  // Stop Stella if she's currently speaking
+  stopSpeaking();
+
   input.value = '';
   addMessage('user', text);
   showTyping();
+  playSound('send');
 
   // Play filler voice while waiting for response
   playFiller();
@@ -575,9 +812,10 @@ async function sendMessage() {
     // Store in message history
     const cleaned = processCommands(fullText);
     messages.push({ role: 'assistant', content: cleaned });
+    saveHistory();
     bubble.innerHTML = formatText(cleaned);
 
-    // Hide suggestions after first exchange
+    // Hide static suggestions after first exchange
     const suggestions = document.getElementById('chat-suggestions');
     if (suggestions) suggestions.style.display = 'none';
 
@@ -656,10 +894,7 @@ function toggleVoice() {
   document.getElementById('voice-icon-off').style.display = voiceEnabled ? 'none' : '';
   const btn = document.getElementById('chat-voice-btn');
   btn.title = voiceEnabled ? 'Voice on — click to mute' : 'Voice off — click to unmute';
-  if (!voiceEnabled && currentAudio) {
-    currentAudio.pause();
-    currentAudio = null;
-  }
+  if (!voiceEnabled) stopSpeaking();
 }
 
 // Persistent audio element — lives in the DOM so Chrome trusts it
@@ -698,20 +933,36 @@ async function speakText(text) {
     audioEl.src = url;
     audioEl.playbackRate = voiceSpeed;
 
+    // Speaking indicator: add class
+    isSpeaking = true;
+    const fab = document.getElementById('chat-fab');
+    if (fab) fab.classList.add('speaking');
+
     return new Promise((resolve) => {
       audioEl.onended = () => {
         URL.revokeObjectURL(url);
         if (currentAudio === url) currentAudio = null;
+        isSpeaking = false;
+        if (fab) fab.classList.remove('speaking');
         resolve();
       };
-      audioEl.onerror = () => resolve();
+      audioEl.onerror = () => {
+        isSpeaking = false;
+        if (fab) fab.classList.remove('speaking');
+        resolve();
+      };
       audioEl.play().catch(playErr => {
         console.warn('Voice play blocked — click the speaker icon to retry.', playErr.message);
+        isSpeaking = false;
+        if (fab) fab.classList.remove('speaking');
         resolve();
       });
     });
   } catch (err) {
     console.warn('TTS error:', err);
+    isSpeaking = false;
+    const fab = document.getElementById('chat-fab');
+    if (fab) fab.classList.remove('speaking');
   }
 }
 
@@ -733,11 +984,7 @@ function toggleMic() {
   }
 
   // Stop Stella if she's talking so she doesn't pick up her own voice
-  if (currentAudio) {
-    audioEl.pause();
-    audioEl.currentTime = 0;
-    currentAudio = null;
-  }
+  stopSpeaking();
 
   recognition = new SpeechRecognition();
   recognition.lang = 'en-US';
@@ -798,6 +1045,95 @@ function stopListening() {
   }
 }
 
+// ─── Copy Conversation Recap ───────────────────────────────
+
+function copyRecap() {
+  if (messages.length === 0) {
+    showToast('No conversation to copy yet');
+    return;
+  }
+
+  let recap = `── ${AGENT_NAME} Conversation Recap ──\n`;
+  recap += `Date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n`;
+  if (userName) recap += `Participant: ${userName}\n`;
+  recap += `Messages: ${messages.length}\n\n`;
+
+  messages.forEach(m => {
+    const speaker = m.role === 'assistant' ? AGENT_NAME : (userName || 'You');
+    recap += `${speaker}:\n${m.content}\n\n`;
+  });
+
+  recap += `── End of Recap ──`;
+
+  navigator.clipboard.writeText(recap).then(() => {
+    showToast('Conversation copied to clipboard');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = recap;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    showToast('Conversation copied to clipboard');
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('stella-toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ─── Scroll Reactions (IntersectionObserver) ────────────────
+
+const SCROLL_REACTIONS = {
+  'compareGrid': "This is where it gets interesting — the side-by-side tells the real story.",
+  'paybackGrid': "These payback numbers don't lie — most agents earn back their cost in under 18 months.",
+  'subChart': "See how costs ramp? You're not paying the full twenty-five thousand from day one.",
+  'otpSummary': "Ownership has its perks — you own every line of code after delivery.",
+  'subAgentGrid': "Eight agents, eight specialists. Each one built for a specific team.",
+  'subFeatureGrid': "This is what each agent actually does — the real capabilities under the hood."
+};
+
+function setupScrollObserver() {
+  if (typeof IntersectionObserver === 'undefined') return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const id = entry.target.id;
+      if (scrollReactedSections.has(id) || chatOpen || displayOpen) return;
+
+      scrollReactedSections.add(id);
+      const reaction = SCROLL_REACTIONS[id];
+      if (!reaction) return;
+
+      // Show scroll bubble near FAB
+      showScrollBubble(reaction);
+      playSound('notification');
+    });
+  }, { threshold: 0.3 });
+
+  // Observe key sections
+  Object.keys(SCROLL_REACTIONS).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+}
+
+function showScrollBubble(text) {
+  const bubble = document.getElementById('stella-scroll-bubble');
+  if (!bubble) return;
+  bubble.textContent = text;
+  bubble.classList.add('show');
+  setTimeout(() => bubble.classList.remove('show'), 4000);
+}
+
 // ─── Expose Globals ─────────────────────────────────────────
 
 window.__chatToggle = toggleChat;
@@ -806,6 +1142,7 @@ window.__chatQuick = quickSend;
 window.__closeDisplay = closeDisplay;
 window.__toggleVoice = toggleVoice;
 window.__chatMic = toggleMic;
+window.__copyRecap = copyRecap;
 
 // Create widget after DOM is ready
 if (document.readyState === 'loading') {
