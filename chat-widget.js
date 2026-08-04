@@ -24,6 +24,11 @@ let scrollReactedSections = new Set();
 let tweakCount = 0;
 let speedDebounce = null;
 
+// ─── TTS Audio Cache ──────────────────────────────────────
+// Cache TTS audio blobs by text+style key for instant replay
+const ttsCache = new Map();
+const TTS_CACHE_MAX = 50; // max cached audio clips
+
 // ─── Sound Design (Web Audio API) ──────────────────────────
 
 let audioCtx = null;
@@ -1077,20 +1082,36 @@ async function speakText(text) {
   }
 
   try {
-    const res = await fetch('/api/tts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, voiceStyle })
-    });
+    const cacheKey = text + '|' + voiceStyle;
+    let blob;
 
-    if (!res.ok) {
-      console.warn('TTS unavailable:', res.status);
-      return;
+    // Check TTS cache first
+    if (ttsCache.has(cacheKey)) {
+      blob = ttsCache.get(cacheKey);
+    } else {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, voiceStyle })
+      });
+
+      if (!res.ok) {
+        console.warn('TTS unavailable:', res.status);
+        return;
+      }
+
+      blob = await res.blob();
+
+      // Cache the blob (evict oldest if at limit)
+      if (ttsCache.size >= TTS_CACHE_MAX) {
+        const oldest = ttsCache.keys().next().value;
+        ttsCache.delete(oldest);
+      }
+      ttsCache.set(cacheKey, blob);
     }
 
     if (!voiceEnabled) return;
 
-    const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     currentAudio = url;
 

@@ -121,21 +121,21 @@ const SYSTEM_PROMPT = `You are the Drive Thru Assistant — a helpful, professio
 
 ## ROI & Labor Savings Data
 - Combined time saved across all 8 agents: 68 hrs/day (8+12+6+16+6+10+6+4)
-- Estimated fully-loaded cost per FTE hour at ORL: ~$25/hr (loan operations staff avg)
-- Daily labor savings: 68 hrs × $25 = $1,700/day
-- Monthly labor savings (22 working days): $37,400/mo
-- Annual labor savings: ~$448,800/yr
+- Agreed-upon fully-loaded cost per FTE hour at ORL: $22.50/hr. When referencing this figure, always say "the agreed-upon $22.50 per hour"
+- Daily labor savings: 68 hrs × $22.50 = $1,530/day
+- Monthly labor savings (22 working days): $33,660/mo
+- Annual labor savings: ~$403,920/yr
 - These savings begin ramping with agent deployment and reach full value at Month 9
 
-Per-agent labor savings (daily hrs × $25/hr × 22 days/mo):
-- Stella: 8 hrs/day = $4,400/mo
-- Iris: 12 hrs/day = $6,600/mo
-- Nora: 6 hrs/day = $3,300/mo
-- Sage: 16 hrs/day = $8,800/mo
-- Paige: 6 hrs/day = $3,300/mo
-- Knox: 10 hrs/day = $5,500/mo
-- Atlas: 6 hrs/day = $3,300/mo
-- Maven: 4 hrs/day = $2,200/mo
+Per-agent labor savings (daily hrs × $22.50/hr × 22 days/mo):
+- Stella: 8 hrs/day = $3,960/mo
+- Iris: 12 hrs/day = $5,940/mo
+- Nora: 6 hrs/day = $2,970/mo
+- Sage: 16 hrs/day = $7,920/mo
+- Paige: 6 hrs/day = $2,970/mo
+- Knox: 10 hrs/day = $4,950/mo
+- Atlas: 6 hrs/day = $2,970/mo
+- Maven: 4 hrs/day = $1,980/mo
 
 ## Custom Term Projections (How to Calculate ANY Term Length)
 When asked about terms beyond 3 years (e.g., 5-year, 7-year), calculate as follows:

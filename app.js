@@ -68,7 +68,7 @@ function renderAgentShowcase() {
   AGENTS.forEach(a => {
     const f = FEATURES[a.name];
     el.innerHTML += `<div class="showcase-card animate">
-      <img class="showcase-avatar" src="images/${a.name.toLowerCase()}.png" alt="${a.name}">
+      <img class="showcase-avatar" src="images/${a.name.toLowerCase()}.png" alt="${a.name}" loading="lazy">
       <div class="showcase-name">${a.name}</div>
       <div class="showcase-role">${f.desc}</div>
       <div class="showcase-team">${f.team}</div>
@@ -197,7 +197,7 @@ function initDashboard() {
       <div class="rate">${totalMonths} months (${fullMonths} full + ${reducedMonths} reduced)</div>
       <div class="total">3-Year: ${fmt(agentTotal)}</div>
       <div class="rate" style="font-size:10px;color:#999;margin-top:6px">18-mo lock-in · 60-day notice after M18 · 50% penalty on remaining months up to M24</div>
-      <img class="agent-char" src="images/${a.name.toLowerCase()}.png" alt="${a.name}">
+      <img class="agent-char" src="images/${a.name.toLowerCase()}.png" alt="${a.name}" loading="lazy">
     </div>`;
   });
 
@@ -218,7 +218,7 @@ function initDashboard() {
         <div class="feature-deps" style="margin-top:3px"><strong>HITL Gate:</strong> ${f.hitl}</div>
         <div class="feature-savings">⏱ ${a.timeSaved} saved</div>
       </div>
-      <img class="feature-char" src="images/${a.name.toLowerCase()}.png" alt="${a.name}">
+      <img class="feature-char" src="images/${a.name.toLowerCase()}.png" alt="${a.name}" loading="lazy">
     </div>`;
   });
 
@@ -302,7 +302,7 @@ function initDashboard() {
       <div class="rate" style="color:#888;font-size:11px">Est. Tokens: <span>${fmt(a.tokenCost)}/mo</span> (ongoing, paid by ORL)</div>
       <div class="rate">Payback: <span>${paybackMonths} mo</span> vs subscription</div>
       <div class="total" style="color:var(--gold)">Build: ${fmt(a.buildCost)}</div>
-      <img class="agent-char" src="images/${a.name.toLowerCase()}.png" alt="${a.name}">
+      <img class="agent-char" src="images/${a.name.toLowerCase()}.png" alt="${a.name}" loading="lazy">
     </div>`;
   });
 
@@ -323,7 +323,7 @@ function initDashboard() {
         <div class="feature-deps" style="margin-top:3px"><strong>HITL Gate:</strong> ${f.hitl}</div>
         <div class="feature-savings">⏱ ${a.timeSaved} saved</div>
       </div>
-      <img class="feature-char" src="images/${a.name.toLowerCase()}.png" alt="${a.name}">
+      <img class="feature-char" src="images/${a.name.toLowerCase()}.png" alt="${a.name}" loading="lazy">
     </div>`;
   });
 
