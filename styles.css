@@ -95,6 +95,20 @@
 .call-step-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(50,130,184,0.3),rgba(92,184,255,0.15));border:1px solid rgba(100,180,255,0.3);color:var(--accent-light);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .call-modal-note{font-size:12px;color:rgba(200,210,230,0.4);line-height:1.5;font-style:italic}
 
+/* Option picker */
+.call-modal-options{display:flex;gap:12px;margin-bottom:24px}
+.call-option-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 12px;border-radius:16px;background:rgba(100,180,255,0.06);border:1.5px solid rgba(100,180,255,0.18);color:rgba(220,225,240,0.85);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.25s;font-family:inherit}
+.call-option-btn:hover{background:rgba(100,180,255,0.12);border-color:rgba(100,180,255,0.4);color:#fff;transform:translateY(-2px);box-shadow:0 8px 30px rgba(100,180,255,0.12)}
+.call-option-btn svg{opacity:0.7;transition:opacity 0.2s}.call-option-btn:hover svg{opacity:1}
+.call-modal-computer,.call-modal-phone-panel{display:none;margin-bottom:16px}
+.call-modal-overlay.show-computer .call-modal-computer{display:block}
+.call-modal-overlay.show-phone .call-modal-phone-panel{display:block}
+.call-modal-overlay.show-computer .call-modal-options,
+.call-modal-overlay.show-phone .call-modal-options{display:none}
+.call-modal-overlay.show-computer .call-modal{max-width:520px}
+.call-iframe-wrap{border-radius:16px;overflow:hidden;border:1px solid rgba(100,180,255,0.15);margin-bottom:16px;background:rgba(0,0,0,0.3)}
+.call-back-btn{background:none;border:none;color:rgba(200,210,230,0.5);font-size:13px;cursor:pointer;padding:8px 0;font-family:inherit;transition:color 0.2s}.call-back-btn:hover{color:#fff}
+
 /* ── Orbital Graphic ──────────────────────────────────────── */
 .landing-orbital-wrap{flex:1;display:flex;justify-content:center;align-items:center;position:relative;animation:fadeInUp 1s 0.3s ease both}
 .orbital-svg{width:100%;max-width:520px;aspect-ratio:1;filter:drop-shadow(0 0 40px rgba(100,180,255,0.08))}
