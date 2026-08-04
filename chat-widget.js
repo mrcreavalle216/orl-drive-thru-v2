@@ -235,6 +235,12 @@ function createWidget() {
       <button id="agent-display-close" onclick="window.__closeDisplay()">&times;</button>
     </div>
     <div id="agent-display-content"></div>
+    <div id="agent-display-input-area">
+      <input type="text" id="agent-display-input" placeholder="Reply to ${AGENT_NAME}..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();window.__displaySend()}">
+      <button id="agent-display-send" onclick="window.__displaySend()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+      </button>
+    </div>
   `;
   document.body.appendChild(display);
 
@@ -718,6 +724,20 @@ function closeDisplay() {
   panel.classList.remove('open');
   if (bk) bk.classList.remove('open');
   displayOpen = false;
+}
+
+function displaySend() {
+  const input = document.getElementById('agent-display-input');
+  const text = input ? input.value.trim() : '';
+  if (!text || isTyping) return;
+  input.value = '';
+  // Close display and switch to chat with the message
+  closeDisplay();
+  if (!chatOpen) toggleChat();
+  setTimeout(() => {
+    document.getElementById('chat-input').value = text;
+    sendMessage();
+  }, 200);
 }
 
 function formatDisplayContent(text) {
@@ -1227,6 +1247,7 @@ window.__chatToggle = toggleChat;
 window.__chatSend = sendMessage;
 window.__chatQuick = quickSend;
 window.__closeDisplay = closeDisplay;
+window.__displaySend = displaySend;
 window.__toggleVoice = toggleVoice;
 window.__chatMic = toggleMic;
 window.__copyRecap = copyRecap;
