@@ -5,6 +5,10 @@ function checkPw() {
     document.getElementById("pw-gate").style.display = "none";
     document.getElementById("main-content").style.display = "block";
     initDashboard();
+    // Show welcome popup after dashboard loads
+    if (typeof window.__showWelcome === 'function') {
+      window.__showWelcome();
+    }
   } else {
     document.getElementById("pw-error").textContent = "Access denied.";
   }

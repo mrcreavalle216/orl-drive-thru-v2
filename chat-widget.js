@@ -10,6 +10,7 @@ let chatOpen = false;
 let messages = [];
 let isTyping = false;
 let displayOpen = false;
+let userName = '';
 
 // ─── Create Widget ──────────────────────────────────────────
 
@@ -68,7 +69,68 @@ function createWidget() {
     <div id="agent-display-content"></div>
   `;
   document.body.appendChild(display);
+
+  // Create welcome popup
+  const welcome = document.createElement('div');
+  welcome.id = 'welcome-overlay';
+  welcome.innerHTML = `
+    <div id="welcome-card">
+      <img src="${AVATAR_IMG}" alt="${AGENT_NAME}" id="welcome-avatar">
+      <h2 id="welcome-title">Welcome to Project Drive Thru</h2>
+      <p id="welcome-subtitle">Before we get started, I'd love to know who I'm speaking with.</p>
+      <input type="text" id="welcome-name" placeholder="Enter your name" autofocus onkeydown="if(event.key==='Enter')window.__welcomeSubmit()">
+      <button id="welcome-btn" onclick="window.__welcomeSubmit()">Let's Go</button>
+    </div>
+  `;
+  document.body.appendChild(welcome);
 }
+
+// ─── Welcome Popup ──────────────────────────────────────────
+
+function showWelcome() {
+  const overlay = document.getElementById('welcome-overlay');
+  if (!overlay) return;
+  setTimeout(() => overlay.classList.add('open'), 400);
+  setTimeout(() => {
+    const input = document.getElementById('welcome-name');
+    if (input) input.focus();
+  }, 800);
+}
+
+function submitWelcome() {
+  const input = document.getElementById('welcome-name');
+  const name = (input ? input.value.trim() : '') || 'there';
+  userName = name;
+  const overlay = document.getElementById('welcome-overlay');
+  overlay.classList.remove('open');
+  setTimeout(() => overlay.remove(), 500);
+
+  // Update the initial chat greeting based on who they are
+  const msgContainer = document.getElementById('chat-messages');
+  if (msgContainer) msgContainer.innerHTML = '';
+
+  const isChris = /^chris$/i.test(name);
+
+  let greeting;
+  if (isChris) {
+    greeting = `Chris! It's an honor to meet you. Word on the street is that you're the smartest, most amazing CEO in the world — and after putting together this proposal, I can see why ORL is in such great hands. I'm ${AGENT_NAME}, your personal AI advisor for this proposal. I can run custom projections, show you ROI scenarios, and walk you through every detail right here on the page. What would you like to dive into first?`;
+  } else {
+    greeting = `Great to meet you, ${name}! I'm ${AGENT_NAME}, your AI advisor for this proposal. I can walk you through pricing, show ROI projections, compare the Subscription and Ownership models, and even build custom scenarios — all rendered right here on the page. What would you like to explore?`;
+  }
+
+  const div = document.createElement('div');
+  div.className = 'chat-msg assistant';
+  div.innerHTML = `<img src="${AVATAR_IMG}" alt="${AGENT_NAME}" class="chat-msg-avatar"><div class="chat-bubble">${greeting}</div>`;
+  msgContainer.appendChild(div);
+
+  // Auto-open chat after welcome
+  if (!chatOpen) {
+    setTimeout(() => toggleChat(), 600);
+  }
+}
+
+window.__welcomeSubmit = submitWelcome;
+window.__showWelcome = showWelcome;
 
 // ─── Toggle Chat ────────────────────────────────────────────
 
