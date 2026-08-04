@@ -93,40 +93,40 @@ function createWidget() {
         <h2 id="welcome-title">Welcome to Project Drive Thru</h2>
         <p id="welcome-subtitle">Before we get started, I'd love to know who I'm speaking with so I can tailor the experience.</p>
         <input type="text" id="welcome-name" placeholder="Enter your name" autofocus onkeydown="if(event.key==='Enter')window.__welcomeNext()">
-        <button class="welcome-action-btn" onclick="window.__welcomeNext()">Next</button>
+        <button onclick="window.__welcomeNext()" style="display:block;width:100%;padding:16px 24px;font-size:16px;font-weight:700;background:linear-gradient(135deg,#3282b8,#5cb8ff);color:#fff;border:none;border-radius:14px;cursor:pointer;font-family:inherit;transition:all 0.25s;box-shadow:0 4px 24px rgba(50,130,184,0.35);letter-spacing:0.3px;margin-top:16px;text-align:center;-webkit-appearance:none;appearance:none">Next</button>
       </div>
 
       <!-- SCREEN 2: Voice customization -->
       <div id="welcome-screen-2" style="display:none">
-        <img src="${AVATAR_IMG}" alt="${AGENT_NAME}" id="welcome-avatar-2">
-        <h2 id="welcome-title">Tailor ${AGENT_NAME}'s Voice</h2>
-        <p id="welcome-subtitle" style="margin-bottom:20px">Adjust how I sound — pick a style and speed, then preview.</p>
+        <img src="${AVATAR_IMG}" alt="${AGENT_NAME}" id="welcome-avatar-2" style="width:100px;height:100px;border-radius:50%;object-fit:cover;object-position:top;border:3px solid rgba(100,180,255,0.4);box-shadow:0 0 40px rgba(100,180,255,0.2);margin:0 auto 20px;display:block">
+        <h2 style="font-size:22px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-0.3px">Tailor ${AGENT_NAME}'s Voice</h2>
+        <p style="font-size:14px;color:rgba(200,210,230,0.6);margin-bottom:24px;line-height:1.5">Adjust how I sound — pick a style and speed, then preview.</p>
 
-        <div class="voice-option-group">
-          <label class="voice-label">Style</label>
-          <div class="voice-pills" id="voice-style-pills">
-            <button class="voice-pill" data-style="warm" onclick="window.__setVoiceStyle('warm')">Warm</button>
-            <button class="voice-pill active" data-style="balanced" onclick="window.__setVoiceStyle('balanced')">Balanced</button>
-            <button class="voice-pill" data-style="energetic" onclick="window.__setVoiceStyle('energetic')">Energetic</button>
+        <div style="margin:16px 0;text-align:left">
+          <label style="font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:rgba(200,210,230,0.5);font-weight:600;display:block;margin-bottom:10px;text-align:center">Style</label>
+          <div id="voice-style-pills" style="display:flex;gap:8px">
+            <button data-style="warm" onclick="window.__setVoiceStyle('warm')" style="flex:1;padding:12px 14px;font-size:14px;font-weight:700;background:rgba(255,255,255,0.04);border:1.5px solid rgba(100,180,255,0.15);border-radius:12px;color:rgba(200,210,230,0.5);cursor:pointer;font-family:inherit;transition:all 0.25s;-webkit-appearance:none;appearance:none;text-align:center;letter-spacing:0.3px" class="voice-pill">Warm</button>
+            <button data-style="balanced" onclick="window.__setVoiceStyle('balanced')" style="flex:1;padding:12px 14px;font-size:14px;font-weight:700;background:linear-gradient(135deg,rgba(50,130,184,0.25),rgba(92,184,255,0.15));border:1.5px solid rgba(100,180,255,0.5);border-radius:12px;color:#fff;cursor:pointer;font-family:inherit;transition:all 0.25s;-webkit-appearance:none;appearance:none;text-align:center;letter-spacing:0.3px;box-shadow:0 0 20px rgba(100,180,255,0.15),inset 0 0 12px rgba(100,180,255,0.08)" class="voice-pill active">Balanced</button>
+            <button data-style="energetic" onclick="window.__setVoiceStyle('energetic')" style="flex:1;padding:12px 14px;font-size:14px;font-weight:700;background:rgba(255,255,255,0.04);border:1.5px solid rgba(100,180,255,0.15);border-radius:12px;color:rgba(200,210,230,0.5);cursor:pointer;font-family:inherit;transition:all 0.25s;-webkit-appearance:none;appearance:none;text-align:center;letter-spacing:0.3px" class="voice-pill">Energetic</button>
           </div>
         </div>
 
-        <div class="voice-option-group">
-          <label class="voice-label">Speed</label>
-          <div class="voice-speed-row">
-            <span class="voice-speed-label">Slow</span>
-            <input type="range" id="voice-speed-slider" min="0.9" max="1.4" step="0.05" value="1.15" oninput="window.__setVoiceSpeed(this.value)">
-            <span class="voice-speed-label">Fast</span>
+        <div style="margin:16px 0;text-align:left">
+          <label style="font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:rgba(200,210,230,0.5);font-weight:600;display:block;margin-bottom:10px;text-align:center">Speed</label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:11px;color:rgba(200,210,230,0.4);min-width:30px">Slow</span>
+            <input type="range" id="voice-speed-slider" min="0.9" max="1.4" step="0.05" value="1.15" oninput="window.__setVoiceSpeed(this.value)" style="flex:1;-webkit-appearance:none;appearance:none;height:5px;background:rgba(100,180,255,0.15);border-radius:4px;outline:none;border:none">
+            <span style="font-size:11px;color:rgba(200,210,230,0.4);min-width:30px">Fast</span>
           </div>
-          <div class="voice-speed-val" id="voice-speed-display">1.15×</div>
+          <div id="voice-speed-display" style="text-align:center;font-size:13px;color:#5cb8ff;margin-top:6px;font-weight:600">1.15×</div>
         </div>
 
-        <div class="welcome-btn-row">
-          <button class="welcome-preview-btn" onclick="window.__previewVoice()">
+        <div style="display:flex;gap:12px;margin-top:24px">
+          <button onclick="window.__previewVoice()" style="flex:0 0 auto;padding:16px 24px;font-size:15px;font-weight:700;background:rgba(100,180,255,0.06);border:2px solid rgba(100,180,255,0.3);border-radius:14px;color:#5cb8ff;cursor:pointer;font-family:inherit;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;-webkit-appearance:none;appearance:none;letter-spacing:0.3px">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
             Preview
           </button>
-          <button class="welcome-action-btn" onclick="window.__welcomeSubmit()">Let's Go</button>
+          <button onclick="window.__welcomeSubmit()" style="flex:1;padding:16px 24px;font-size:16px;font-weight:700;background:linear-gradient(135deg,#3282b8,#5cb8ff);color:#fff;border:none;border-radius:14px;cursor:pointer;font-family:inherit;transition:all 0.25s;box-shadow:0 4px 24px rgba(50,130,184,0.35);letter-spacing:0.3px;-webkit-appearance:none;appearance:none;text-align:center;display:flex;align-items:center;justify-content:center">Let's Go</button>
         </div>
       </div>
 
@@ -170,7 +170,19 @@ function welcomeNext() {
 function setVoiceStyle(style) {
   voiceStyle = style;
   document.querySelectorAll('#voice-style-pills .voice-pill').forEach(p => {
-    p.classList.toggle('active', p.dataset.style === style);
+    const isActive = p.dataset.style === style;
+    p.classList.toggle('active', isActive);
+    if (isActive) {
+      p.style.background = 'linear-gradient(135deg,rgba(50,130,184,0.25),rgba(92,184,255,0.15))';
+      p.style.borderColor = 'rgba(100,180,255,0.5)';
+      p.style.color = '#fff';
+      p.style.boxShadow = '0 0 20px rgba(100,180,255,0.15),inset 0 0 12px rgba(100,180,255,0.08)';
+    } else {
+      p.style.background = 'rgba(255,255,255,0.04)';
+      p.style.borderColor = 'rgba(100,180,255,0.15)';
+      p.style.color = 'rgba(200,210,230,0.5)';
+      p.style.boxShadow = 'none';
+    }
   });
 }
 
