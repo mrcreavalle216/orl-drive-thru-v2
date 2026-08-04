@@ -37,6 +37,12 @@ module.exports = async (req, res) => {
     .replace(/\n{3,}/g, '\n\n')                      // collapse blank lines
     .trim();
 
+  // Fix large numbers for natural speech
+  // Strip commas from numbers so TTS reads them as whole values (e.g. $463,000 → $463000)
+  cleanText = cleanText.replace(/(\d),(\d{3})/g, '$1$2');
+  // Catch numbers with multiple commas (e.g. $1,215,484 → needs two passes)
+  cleanText = cleanText.replace(/(\d),(\d{3})/g, '$1$2');
+
   // Expand abbreviations so TTS reads them naturally
   const abbrevs = [
     // Time & measurement
