@@ -111,12 +111,13 @@
 
 /* ── Model Preview Cards ──────────────────────────────────── */
 .models-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:840px;margin:0 auto}
-.model-card{background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1.5px solid var(--glass-border);border-radius:var(--radius);padding:36px 28px;text-align:left;transition:all 0.35s}.model-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+.model-card{background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1.5px solid var(--glass-border);border-radius:var(--radius);padding:36px 28px;text-align:left;transition:all 0.35s;display:flex;flex-direction:column}.model-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
 .model-sub{border-top:3px solid var(--accent-light)}
 .model-otp{border-top:3px solid var(--gold)}
 .model-icon{font-size:32px;margin-bottom:16px}
 .model-card h3{font-size:20px;font-weight:800;color:#fff;margin-bottom:12px}
 .model-card p{font-size:14px;color:var(--gray);line-height:1.7;margin-bottom:20px}
+.model-card p{flex:1}
 .model-link{font-size:14px;font-weight:600;text-decoration:none;transition:color 0.2s}
 .sub-link{color:var(--accent-light)}.sub-link:hover{color:#fff}
 .otp-link{color:var(--gold-light)}.otp-link:hover{color:#fff}
