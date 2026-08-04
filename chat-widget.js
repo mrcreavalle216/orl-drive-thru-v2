@@ -13,6 +13,8 @@ let displayOpen = false;
 let userName = '';
 let voiceEnabled = true;
 let currentAudio = null;
+let voiceSpeed = 1.15;
+let voiceStyle = 'balanced'; // balanced, warm, energetic
 
 // ─── Create Widget ──────────────────────────────────────────
 
@@ -87,8 +89,40 @@ function createWidget() {
       <img src="${AVATAR_IMG}" alt="${AGENT_NAME}" id="welcome-avatar">
       <h2 id="welcome-title">Welcome to Project Drive Thru</h2>
       <p id="welcome-subtitle">Before we get started, I'd love to know who I'm speaking with.</p>
-      <input type="text" id="welcome-name" placeholder="Enter your name" autofocus onkeydown="if(event.key==='Enter')window.__welcomeSubmit()">
-      <button id="welcome-btn" onclick="window.__welcomeSubmit()">Let's Go</button>
+      <input type="text" id="welcome-name" placeholder="Enter your name" autofocus onkeydown="if(event.key==='Enter')document.getElementById('welcome-voice-section').style.display='block'">
+
+      <div id="welcome-voice-section" style="display:none">
+        <p style="font-size:13px;color:rgba(255,255,255,0.7);margin:16px 0 10px;text-align:center">Tailor ${AGENT_NAME}'s voice</p>
+
+        <div class="voice-option-group">
+          <label class="voice-label">Style</label>
+          <div class="voice-pills" id="voice-style-pills">
+            <button class="voice-pill" data-style="warm" onclick="window.__setVoiceStyle('warm')">Warm</button>
+            <button class="voice-pill active" data-style="balanced" onclick="window.__setVoiceStyle('balanced')">Balanced</button>
+            <button class="voice-pill" data-style="energetic" onclick="window.__setVoiceStyle('energetic')">Energetic</button>
+          </div>
+        </div>
+
+        <div class="voice-option-group">
+          <label class="voice-label">Speed</label>
+          <div class="voice-speed-row">
+            <span class="voice-speed-label">Slow</span>
+            <input type="range" id="voice-speed-slider" min="0.9" max="1.4" step="0.05" value="1.15" oninput="window.__setVoiceSpeed(this.value)">
+            <span class="voice-speed-label">Fast</span>
+          </div>
+          <div class="voice-speed-val" id="voice-speed-display">1.15×</div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:14px">
+          <button class="voice-preview-btn" onclick="window.__previewVoice()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+            Preview Voice
+          </button>
+          <button id="welcome-btn" onclick="window.__welcomeSubmit()">Let's Go</button>
+        </div>
+      </div>
+
+      <button id="welcome-name-next" onclick="document.getElementById('welcome-voice-section').style.display='block';this.style.display='none'" style="margin-top:12px">Next</button>
     </div>
   `;
   document.body.appendChild(welcome);
@@ -143,6 +177,27 @@ function submitWelcome() {
   }
 }
 
+function setVoiceStyle(style) {
+  voiceStyle = style;
+  document.querySelectorAll('#voice-style-pills .voice-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.style === style);
+  });
+}
+
+function setVoiceSpeed(val) {
+  voiceSpeed = parseFloat(val);
+  const display = document.getElementById('voice-speed-display');
+  if (display) display.textContent = voiceSpeed.toFixed(2) + '×';
+}
+
+function previewVoice() {
+  const name = (document.getElementById('welcome-name').value.trim()) || 'there';
+  speakText(`Hi ${name}, I'm Stella. This is how I'll sound during our conversation. How's this?`);
+}
+
+window.__setVoiceStyle = setVoiceStyle;
+window.__setVoiceSpeed = setVoiceSpeed;
+window.__previewVoice = previewVoice;
 window.__welcomeSubmit = submitWelcome;
 window.__showWelcome = showWelcome;
 
@@ -522,7 +577,7 @@ async function speakText(text) {
     const res = await fetch('/api/tts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text, voiceStyle })
     });
 
     if (!res.ok) {
@@ -537,7 +592,7 @@ async function speakText(text) {
     currentAudio = url;
 
     audioEl.src = url;
-    audioEl.playbackRate = 1.15;
+    audioEl.playbackRate = voiceSpeed;
 
     return new Promise((resolve) => {
       audioEl.onended = () => {
