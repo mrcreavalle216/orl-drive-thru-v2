@@ -526,6 +526,7 @@ async function sendMessage() {
     });
 
     hideTyping();
+    stopFiller();
 
     if (!res.ok) {
       const err = await res.text();
@@ -584,6 +585,7 @@ async function sendMessage() {
     if (voiceEnabled) speakText(cleaned);
   } catch (err) {
     hideTyping();
+    stopFiller();
     addMessage('assistant', 'Sorry, I\'m having trouble connecting. Please check your connection and try again.');
     console.error('Chat error:', err);
   }
@@ -604,13 +606,46 @@ const FILLER_PHRASES = [
   "Mmhmm, let me check."
 ];
 
+const FILLER_PHRASES_2 = [
+  "Almost there.",
+  "Ok bear with me.",
+  "Just crunching a couple things.",
+  "Alright, pulling it together now.",
+  "Hold tight, almost got it.",
+  "Gimme one more sec.",
+  "Yeah ok, here we go."
+];
+
 let fillerPlaying = false;
+let fillerTimer = null;
+let responseReady = false;
 
 function playFiller() {
   if (!voiceEnabled) return;
+  responseReady = false;
   const phrase = FILLER_PHRASES[Math.floor(Math.random() * FILLER_PHRASES.length)];
   fillerPlaying = true;
-  speakText(phrase).then(() => { fillerPlaying = false; });
+  speakText(phrase).then(() => {
+    fillerPlaying = false;
+    // If response still isn't ready after first filler, queue another
+    if (!responseReady && isTyping) {
+      fillerTimer = setTimeout(() => {
+        if (!responseReady && isTyping && voiceEnabled) {
+          const phrase2 = FILLER_PHRASES_2[Math.floor(Math.random() * FILLER_PHRASES_2.length)];
+          fillerPlaying = true;
+          speakText(phrase2).then(() => { fillerPlaying = false; });
+        }
+      }, 800);
+    }
+  });
+}
+
+function stopFiller() {
+  responseReady = true;
+  if (fillerTimer) {
+    clearTimeout(fillerTimer);
+    fillerTimer = null;
+  }
 }
 
 // ─── Voice (ElevenLabs TTS) ────────────────────────────────
