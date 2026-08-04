@@ -13,6 +13,17 @@ let displayOpen = false;
 let userName = '';
 let voiceEnabled = true;
 let currentAudio = null;
+let audioCtx = null;
+
+// Unlock Web Audio on any user interaction (required by Chrome autoplay policy)
+function ensureAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
 
 // ─── Create Widget ──────────────────────────────────────────
 
@@ -373,6 +384,9 @@ function hideTyping() {
 // ─── Send Message ───────────────────────────────────────────
 
 async function sendMessage() {
+  // Unlock audio in user gesture context (before any await)
+  if (voiceEnabled) ensureAudioContext();
+
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   if (!text || isTyping) return;
@@ -433,9 +447,11 @@ function toggleVoice() {
 async function speakText(text) {
   // Stop any currently playing audio
   if (currentAudio) {
-    try { currentAudio.pause(); } catch (_) {}
+    try { currentAudio.stop(); } catch (_) {}
     currentAudio = null;
   }
+
+  if (!audioCtx) ensureAudioContext();
 
   try {
     const res = await fetch('/api/tts', {
@@ -449,34 +465,25 @@ async function speakText(text) {
       return;
     }
 
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio();
+    // Check voice still enabled after fetch
+    if (!voiceEnabled) return;
 
-    await new Promise((resolve, reject) => {
-      audio.addEventListener('canplaythrough', resolve, { once: true });
-      audio.addEventListener('error', reject, { once: true });
-      audio.src = url;
-      audio.load();
-    });
+    const arrayBuffer = await res.arrayBuffer();
+    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
 
-    // Check voice is still enabled (user may have toggled during fetch)
-    if (!voiceEnabled) {
-      URL.revokeObjectURL(url);
-      return;
-    }
+    // Check again after decode
+    if (!voiceEnabled) return;
 
-    currentAudio = audio;
-    audio.addEventListener('ended', () => {
-      URL.revokeObjectURL(url);
-      if (currentAudio === audio) currentAudio = null;
-    });
-
-    await audio.play();
+    const source = audioCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(audioCtx.destination);
+    source.onended = () => {
+      if (currentAudio === source) currentAudio = null;
+    };
+    currentAudio = source;
+    source.start(0);
   } catch (err) {
-    if (err.name !== 'AbortError') {
-      console.warn('TTS error:', err);
-    }
+    console.warn('TTS error:', err);
   }
 }
 
