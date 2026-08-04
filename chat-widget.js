@@ -122,7 +122,7 @@ function createWidget() {
         </div>
       </div>
 
-      <button id="welcome-name-next" onclick="document.getElementById('welcome-voice-section').style.display='block';this.style.display='none'" style="margin-top:12px">Next</button>
+      <button id="welcome-name-next" onclick="window.__welcomeNext()" style="margin-top:12px">Next</button>
     </div>
   `;
   document.body.appendChild(welcome);
@@ -140,10 +140,57 @@ function showWelcome() {
   }, 800);
 }
 
-function submitWelcome() {
+// Step 1: User clicks "Next" after entering name — intro speech plays, voice controls appear
+function welcomeNext() {
+  const nameInput = document.getElementById('welcome-name');
+  const name = (nameInput ? nameInput.value.trim() : '') || 'there';
+  const isChris = /^chris$/i.test(name);
+
+  // Show voice customization section, hide Next button
+  document.getElementById('welcome-voice-section').style.display = 'block';
+  document.getElementById('welcome-name-next').style.display = 'none';
+
+  // Speak the intro immediately
+  if (isChris) {
+    speakText(`Hey Chris, so I heard you might not like my voice, and some chick named Cosmos A.I. thinks she's superior to me? Like, what type of name is Cosmos A.I.? Anyway — adjust my style and speed until I sound just right, and I'll show you what a real A.I. advisor can do.`);
+  } else {
+    speakText(`Hi ${name}, I'm Stella. This is how I'll sound during our conversation. Go ahead and adjust the style and speed until it feels right — I'm flexible like that.`);
+  }
+}
+
+// Step 2: User adjusts voice, can preview again
+function setVoiceStyle(style) {
+  voiceStyle = style;
+  document.querySelectorAll('#voice-style-pills .voice-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.style === style);
+  });
+}
+
+function setVoiceSpeed(val) {
+  voiceSpeed = parseFloat(val);
+  const display = document.getElementById('voice-speed-display');
+  if (display) display.textContent = voiceSpeed.toFixed(2) + '×';
+}
+
+function previewVoice() {
+  speakText(`How's this? If you want, keep tweaking — I can go all day.`);
+}
+
+// Step 3: User clicks "Let's Go" — closing line plays, then transition to main experience
+async function submitWelcome() {
   const input = document.getElementById('welcome-name');
   const name = (input ? input.value.trim() : '') || 'there';
   userName = name;
+  const isChris = /^chris$/i.test(name);
+
+  // Speak the closing line first
+  const closingLine = isChris
+    ? `Ahh, is that better? Ok great, let's get this party started!`
+    : `Perfect. Alright, let's get into it!`;
+
+  await speakText(closingLine);
+
+  // Now close the welcome overlay
   const overlay = document.getElementById('welcome-overlay');
   overlay.classList.remove('open');
   setTimeout(() => overlay.remove(), 500);
@@ -151,8 +198,6 @@ function submitWelcome() {
   // Update the initial chat greeting based on who they are
   const msgContainer = document.getElementById('chat-messages');
   if (msgContainer) msgContainer.innerHTML = '';
-
-  const isChris = /^chris$/i.test(name);
 
   let greeting;
   if (isChris) {
@@ -177,29 +222,7 @@ function submitWelcome() {
   }
 }
 
-function setVoiceStyle(style) {
-  voiceStyle = style;
-  document.querySelectorAll('#voice-style-pills .voice-pill').forEach(p => {
-    p.classList.toggle('active', p.dataset.style === style);
-  });
-}
-
-function setVoiceSpeed(val) {
-  voiceSpeed = parseFloat(val);
-  const display = document.getElementById('voice-speed-display');
-  if (display) display.textContent = voiceSpeed.toFixed(2) + '×';
-}
-
-function previewVoice() {
-  const name = (document.getElementById('welcome-name').value.trim()) || 'there';
-  const isChris = /^chris$/i.test(name);
-  if (isChris) {
-    speakText(`Hey Chris, so I heard you might not like my voice, and some chick named Cosmos A.I. thinks she's superior to me? Like, what type of name is Cosmos A.I.? Anyway — adjust my style and speed until I sound just right, and I'll show you what a real A.I. advisor can do.`);
-  } else {
-    speakText(`Hi ${name}, I'm Stella. This is how I'll sound during our conversation. Adjust the style and speed until it feels right — I'm flexible like that.`);
-  }
-}
-
+window.__welcomeNext = welcomeNext;
 window.__setVoiceStyle = setVoiceStyle;
 window.__setVoiceSpeed = setVoiceSpeed;
 window.__previewVoice = previewVoice;
