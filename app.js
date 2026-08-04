@@ -1,7 +1,22 @@
 // ─── Password Gate ──────────────────────────────────────────
 
+// Auto-bypass if already authenticated this session
+(function() {
+  if (sessionStorage.getItem('orl-auth') === 'true') {
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById("pw-gate").style.display = "none";
+      document.getElementById("main-content").style.display = "block";
+      initDashboard();
+      if (typeof window.__showWelcome === 'function') {
+        window.__showWelcome();
+      }
+    });
+  }
+})();
+
 function checkPw() {
   if (document.getElementById("pw-input").value === PASSWORD) {
+    sessionStorage.setItem('orl-auth', 'true');
     document.getElementById("pw-gate").style.display = "none";
     document.getElementById("main-content").style.display = "block";
     initDashboard();
@@ -47,7 +62,23 @@ function getMaint(month) {
 
 // ─── Dashboard Init ─────────────────────────────────────────
 
+function renderAgentShowcase() {
+  const el = document.getElementById('agentShowcase');
+  if (!el) return;
+  AGENTS.forEach(a => {
+    const f = FEATURES[a.name];
+    el.innerHTML += `<div class="showcase-card animate">
+      <img class="showcase-avatar" src="images/${a.name.toLowerCase()}.png" alt="${a.name}">
+      <div class="showcase-name">${a.name}</div>
+      <div class="showcase-role">${f.desc}</div>
+      <div class="showcase-team">${f.team}</div>
+      <div class="showcase-time">⏱ ${a.timeSaved} saved</div>
+    </div>`;
+  });
+}
+
 function initDashboard() {
+  renderAgentShowcase();
   const n = TOTAL_MONTHS;
   const totalBuild = AGENTS.reduce((s, a) => s + a.buildCost, 0);
 
@@ -417,7 +448,7 @@ function initDashboard() {
   }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
 
   document.querySelectorAll(
-    ".summary-card, .agent-card, .feature-card, .chart-wrap, .year-box, .compare-box, .payback-card, .notes, .section-title"
+    ".summary-card, .agent-card, .feature-card, .chart-wrap, .year-box, .compare-box, .payback-card, .notes, .section-title, .showcase-card, .model-card, .landing-stat, .lsection-title, .lsection-desc, .pdf-download-row"
   ).forEach(el => {
     el.classList.add("animate");
     scrollObserver.observe(el);

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ORL Drive Thru — 3-Year Model Comparison</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -26,10 +27,97 @@
 <!-- Neural network particle background -->
 <canvas id="bg-canvas"></canvas>
 
-<div class="hero">
-<h1>ORL Project Drive Thru</h1>
-<div class="subtitle">3-Year AI Platform Investment &mdash; Model Comparison</div>
-<div class="label">Prepared for ORL</div>
+<!-- ═══ LANDING PAGE ═══════════════════════════════════════ -->
+<section id="landing">
+<div class="landing-hero hero">
+  <div class="landing-content">
+    <div class="landing-badge">● INSIGHT CONSULTANTS · AI PLATFORM</div>
+    <h1 class="landing-h1">AI-Powered Lending,<br><span class="landing-accent">Reimagined.</span></h1>
+    <p class="landing-desc">A fleet of 8 specialized AI agents designed to modernize OpenRoad Lending&rsquo;s operations &mdash; from first call to funded loan &mdash; with governance built in and outcomes you can measure.</p>
+    <div class="landing-cta-group">
+      <a href="#pricing-anchor" class="landing-cta-primary">Explore the Proposal &nbsp;→</a>
+      <button class="landing-cta-secondary" onclick="if(typeof toggleChat==='function')toggleChat()">Talk to Stella</button>
+    </div>
+  </div>
+  <div class="landing-orbital-wrap">
+    <svg class="orbital-svg" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Orbits -->
+      <circle cx="250" cy="250" r="80" stroke="rgba(0,212,255,0.18)" stroke-width="1"/>
+      <circle cx="250" cy="250" r="155" stroke="rgba(100,180,255,0.12)" stroke-width="1"/>
+      <circle cx="250" cy="250" r="225" stroke="rgba(100,180,255,0.06)" stroke-width="1"/>
+      <!-- Center glow -->
+      <circle cx="250" cy="250" r="32" fill="url(#cGlow)"/>
+      <text x="250" y="258" text-anchor="middle" fill="#fff" font-size="20" opacity="0.9">✦</text>
+      <!-- Connection lines -->
+      <line x1="250" y1="250" x2="95" y2="100" stroke="rgba(100,180,255,0.06)" stroke-width="1"/>
+      <line x1="250" y1="250" x2="420" y2="80" stroke="rgba(100,180,255,0.06)" stroke-width="1"/>
+      <line x1="250" y1="250" x2="460" y2="280" stroke="rgba(100,180,255,0.06)" stroke-width="1"/>
+      <line x1="250" y1="250" x2="400" y2="430" stroke="rgba(100,180,255,0.06)" stroke-width="1"/>
+      <line x1="250" y1="250" x2="80" y2="400" stroke="rgba(100,180,255,0.06)" stroke-width="1"/>
+      <line x1="250" y1="250" x2="40" y2="250" stroke="rgba(100,180,255,0.06)" stroke-width="1"/>
+      <!-- Orbit dots (rotating groups) -->
+      <g class="orbit-dots-1"><circle cx="330" cy="250" r="3.5" fill="rgba(100,180,255,0.55)"/><circle cx="170" cy="250" r="3" fill="rgba(100,180,255,0.4)"/><circle cx="250" cy="170" r="3" fill="rgba(0,212,255,0.5)"/></g>
+      <g class="orbit-dots-2"><circle cx="405" cy="250" r="3" fill="rgba(100,180,255,0.35)"/><circle cx="175" cy="120" r="3.5" fill="rgba(224,64,251,0.5)"/><circle cx="330" cy="370" r="3" fill="rgba(100,180,255,0.3)"/></g>
+      <g class="orbit-dots-3"><circle cx="475" cy="250" r="4" fill="rgba(224,64,251,0.4)"/><circle cx="120" cy="100" r="3" fill="rgba(100,180,255,0.25)"/><circle cx="380" cy="440" r="3.5" fill="rgba(0,212,255,0.35)"/><circle cx="60" cy="330" r="3" fill="rgba(100,180,255,0.2)"/></g>
+      <defs><radialGradient id="cGlow"><stop offset="0%" stop-color="rgba(138,43,226,0.5)"/><stop offset="50%" stop-color="rgba(50,130,184,0.2)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
+    </svg>
+    <!-- Floating labels -->
+    <div class="olabel" style="top:12%;left:8%">Voice</div>
+    <div class="olabel" style="top:8%;right:4%">Analytics</div>
+    <div class="olabel" style="top:48%;right:-6%">Documents</div>
+    <div class="olabel" style="bottom:10%;right:12%">Processing</div>
+    <div class="olabel" style="bottom:10%;left:4%">Compliance</div>
+    <div class="olabel" style="top:44%;left:-6%">Underwriting</div>
+  </div>
+</div>
+
+<div class="landing-stats-bar">
+  <div class="landing-stat"><div class="lstat-num">8</div><div class="lstat-lbl">AI AGENTS</div></div>
+  <div class="landing-stat"><div class="lstat-num">6</div><div class="lstat-lbl">TEAMS SERVED</div></div>
+  <div class="landing-stat"><div class="lstat-num">68+</div><div class="lstat-lbl">HOURS SAVED / DAY</div></div>
+  <div class="landing-stat"><div class="lstat-num">5</div><div class="lstat-lbl">DEPLOYMENT PHASES</div></div>
+  <div class="landing-scroll-cue">SCROLL TO EXPLORE</div>
+</div>
+</section>
+
+<!-- ═══ AGENT FLEET ═══════════════════════════════════════ -->
+<section class="landing-section" id="agent-fleet">
+<div class="lsection-inner">
+  <div class="lsection-badge">THE FLEET</div>
+  <h2 class="lsection-title">Meet Your AI Team</h2>
+  <p class="lsection-desc">Eight purpose-built agents, each designed for a specific team and workflow in your lending operation.</p>
+  <div class="agent-showcase" id="agentShowcase"></div>
+</div>
+</section>
+
+<!-- ═══ TWO MODELS TEASER ═════════════════════════════════ -->
+<section class="landing-section" id="models-preview">
+<div class="lsection-inner">
+  <div class="lsection-badge">INVESTMENT</div>
+  <h2 class="lsection-title">Two Models, One Mission</h2>
+  <p class="lsection-desc">Choose the structure that fits your strategy &mdash; fully managed service or full code ownership.</p>
+  <div class="models-grid">
+    <div class="model-card model-sub">
+      <div class="model-icon">♾</div>
+      <h3>Subscription</h3>
+      <p>Fully managed monthly service. Zero AI staffing required. Includes infrastructure, monitoring, optimization, and all model upgrades. 20% renewal discount in Year 3.</p>
+      <a href="#pricing-anchor" onclick="setTimeout(()=>switchTab('sub'),200)" class="model-link sub-link">View Subscription Pricing →</a>
+    </div>
+    <div class="model-card model-otp">
+      <div class="model-icon">🔑</div>
+      <h3>Ownership</h3>
+      <p>One-time build with full code ownership after delivery. Ongoing maintenance, infrastructure, and token costs are separate. You own every line of code.</p>
+      <a href="#pricing-anchor" onclick="setTimeout(()=>switchTab('otp'),200)" class="model-link otp-link">View Ownership Pricing →</a>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ PRICING SECTION ═══════════════════════════════════ -->
+<div id="pricing-anchor"></div>
+<div class="pricing-header">
+  <h2>Detailed Investment Analysis</h2>
+  <p>3-Year AI Platform Cost Comparison &mdash; Subscription vs. Ownership</p>
 </div>
 
 <div class="tab-bar">
@@ -67,6 +155,7 @@
 <p><strong>Early termination:</strong> 18 Month Lock-In Required. 60-day written notice required after 18 months and Penalty of 50% of the then-current monthly subscription rate for each remaining month on the contract up to 24 months.</p>
 <p><strong>Source:</strong> Subscription rates per Insight pricing model; phased deployment per project plan.</p>
 </div>
+<div class="pdf-download-row"><button class="pdf-download-btn" onclick="generateSubPDF()">📄 Download Subscription Summary (PDF)</button></div>
 </div>
 
 <!-- TAB 2: ONE-TIME -->
@@ -104,6 +193,7 @@
 <p><strong>Estimated token costs (paid by ORL):</strong> ~$985/mo estimated at full deployment for Claude API inference. Modeled on ORL's current call volume (~6,400 CES calls/mo, ~66,750 total calls/mo) and document processing load across all 8 agents. Actual token usage will depend on transaction volume, query complexity, and model selection.</p>
 <p><strong>Code ownership:</strong> ORL owns the codebase. Insight provides maintenance as a service, not managed ops.</p>
 </div>
+<div class="pdf-download-row"><button class="pdf-download-btn pdf-download-btn-otp" onclick="generateOtpPDF()">📄 Download Ownership Summary (PDF)</button></div>
 </div>
 
 <!-- COMPARISON (visible on both tabs) -->
@@ -130,5 +220,6 @@
 <script src="chat-widget.js"></script>
 <script src="charts.js"></script>
 <script src="app.js"></script>
+<script src="pdf-gen.js"></script>
 </body>
 </html>

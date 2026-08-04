@@ -5,9 +5,9 @@
 
 const STEPS = [
   {
-    target: '.hero',
-    title: 'Welcome to Project Drive Thru',
-    text: 'This proposal compares two investment models for deploying <strong>8 AI agents</strong> across your organization over 3 years. Use the tabs to switch between models.',
+    target: '.pricing-header',
+    title: 'Welcome to the Pricing Analysis',
+    text: 'This section compares two investment models for deploying <strong>8 AI agents</strong> across your organization over 3 years. Use the tabs to switch between models.',
     position: 'bottom',
     beforeShow: () => {}
   },
@@ -132,8 +132,9 @@ function showStep(idx) {
 
 function positionTooltip(step) {
   if (!step.target || step.position === 'center') {
-    // Center on screen
+    // Center on screen — use fixed positioning
     spotlight.style.display = 'none';
+    tooltip.style.position = 'fixed';
     tooltip.style.left = '50%';
     tooltip.style.top = '50%';
     tooltip.style.transform = 'translate(-50%, -50%)';
@@ -151,30 +152,40 @@ function positionTooltip(step) {
     const rect = el.getBoundingClientRect();
     const pad = 12;
 
-    // Spotlight
+    // Use fixed positioning so spotlight/tooltip stay in viewport
+    spotlight.style.position = 'fixed';
     spotlight.style.display = 'block';
-    spotlight.style.left = (rect.left - pad + window.scrollX) + 'px';
-    spotlight.style.top = (rect.top - pad + window.scrollY) + 'px';
+    spotlight.style.left = (rect.left - pad) + 'px';
+    spotlight.style.top = (rect.top - pad) + 'px';
     spotlight.style.width = (rect.width + pad * 2) + 'px';
     spotlight.style.height = (rect.height + pad * 2) + 'px';
 
-    // Tooltip position
+    // Tooltip — fixed positioning relative to viewport
+    tooltip.style.position = 'fixed';
     tooltip.style.transform = 'none';
     tooltip.style.maxWidth = '400px';
 
     if (step.position === 'bottom') {
       tooltip.style.left = Math.max(20, rect.left) + 'px';
-      tooltip.style.top = (rect.bottom + pad + 16 + window.scrollY) + 'px';
+      tooltip.style.top = (rect.bottom + pad + 16) + 'px';
     } else {
-      // top
+      // top — measure tooltip first
+      const tooltipH = tooltip.offsetHeight || 200;
       tooltip.style.left = Math.max(20, rect.left) + 'px';
-      tooltip.style.top = (rect.top - pad - 16 + window.scrollY - tooltip.offsetHeight) + 'px';
+      tooltip.style.top = (rect.top - pad - 16 - tooltipH) + 'px';
     }
 
-    // Keep tooltip on screen
+    // Keep tooltip on screen horizontally
     const tr = tooltip.getBoundingClientRect();
     if (tr.right > window.innerWidth - 20) {
       tooltip.style.left = (window.innerWidth - tr.width - 20) + 'px';
+    }
+    // Keep tooltip on screen vertically
+    if (tr.top < 10) {
+      tooltip.style.top = '10px';
+    }
+    if (tr.bottom > window.innerHeight - 10) {
+      tooltip.style.top = (window.innerHeight - tr.height - 10) + 'px';
     }
   }, 350);
 }
@@ -182,9 +193,9 @@ function positionTooltip(step) {
 function startTour() {
   if (!overlay) createOverlay();
   overlay.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  // Don't lock scroll — steps need to scroll to targets below the fold
   showStep(0);
-  // Scroll to top
+  // Scroll to top for the first step
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -205,22 +216,18 @@ const origInit = window.initDashboard;
 window.initDashboard = function() {
   origInit.call(this);
 
-  // Add tour button to hero
-  const hero = document.querySelector('.hero');
-  if (hero) {
+  // Add tour button — prefer landing CTA group, fallback to hero
+  const ctaGroup = document.querySelector('.landing-cta-group') || document.querySelector('.hero');
+  if (ctaGroup) {
     const btn = document.createElement('button');
     btn.id = 'tour-start-btn';
     btn.textContent = '▶  Take a Guided Tour';
     btn.onclick = startTour;
-    hero.appendChild(btn);
+    ctaGroup.appendChild(btn);
   }
 
-  // Auto-start on first visit
-  try {
-    if (!localStorage.getItem('orl-tour-seen')) {
-      setTimeout(startTour, 800);
-    }
-  } catch(e) {}
+  // Tour is now triggered via Stella's welcome flow or the hero button
+  // No auto-start — the welcome popup handles the first-visit experience
 };
 
 })();
