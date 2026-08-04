@@ -209,9 +209,9 @@ async function submitWelcome() {
 
   let greeting;
   if (isChris) {
-    greeting = `Chris! It's an honor to meet you. Word on the street is that you're the smartest, most amazing CEO in the world — and after putting together this proposal, I can see why ORL is in such great hands. I'm ${AGENT_NAME}, your personal AI advisor for this proposal. I can run custom projections, show you ROI scenarios, and walk you through every detail right here on the page. What would you like to dive into first?`;
+    greeting = `Alright Chris, I'm all yours. I know every number in this proposal cold — pricing, timelines, ROI, you name it. Type a question or just hit the mic button and talk to me. What do you want to dig into first?`;
   } else {
-    greeting = `Great to meet you, ${name}! I'm ${AGENT_NAME}, your AI advisor for this proposal. I can walk you through pricing, show ROI projections, compare the Subscription and Ownership models, and even build custom scenarios — all rendered right here on the page. What would you like to explore?`;
+    greeting = `Alright ${name}, I'm all yours. I know this entire proposal inside and out — pricing, ROI, deployment, all of it. You can type or just hit the mic button and talk to me. What catches your eye?`;
   }
 
   const div = document.createElement('div');
@@ -559,16 +559,16 @@ async function sendMessage() {
 // ─── Voice Fillers (while response generates) ─────────────
 
 const FILLER_PHRASES = [
-  "Great question — let me pull that up for you.",
-  "Ooh, good one. Give me just a second.",
-  "Let me crunch those numbers real quick.",
-  "One moment — I want to give you a sharp answer.",
-  "Love that question. Let me dig in.",
-  "Hang tight — running the analysis now.",
-  "On it — just a moment.",
-  "Let me think about that for a sec.",
-  "Smart question — pulling the data now.",
-  "Give me a beat — I've got this."
+  "On it.",
+  "One sec.",
+  "Let me pull that up.",
+  "Pulling the numbers.",
+  "Got it, one sec.",
+  "Yep, hang on.",
+  "Oh yeah, let me grab that.",
+  "Give me a beat.",
+  "Right, so...",
+  "Mmhmm, let me check."
 ];
 
 let fillerPlaying = false;
