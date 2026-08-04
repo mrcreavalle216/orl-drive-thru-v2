@@ -129,9 +129,14 @@ function submitWelcome() {
   div.innerHTML = `<img src="${AVATAR_IMG}" alt="${AGENT_NAME}" class="chat-msg-avatar"><div class="chat-bubble">${greeting}</div>`;
   msgContainer.appendChild(div);
 
-  // Auto-open chat after welcome
+  // Auto-open chat after welcome, then speak the greeting
   if (!chatOpen) {
-    setTimeout(() => toggleChat(), 600);
+    setTimeout(() => {
+      toggleChat();
+      if (voiceEnabled) speakText(greeting);
+    }, 600);
+  } else {
+    if (voiceEnabled) speakText(greeting);
   }
 }
 
@@ -464,6 +469,7 @@ async function speakText(text) {
     currentAudio = url;
 
     audioEl.src = url;
+    audioEl.playbackRate = 1.15;
     audioEl.onended = () => {
       URL.revokeObjectURL(url);
       if (currentAudio === url) currentAudio = null;
