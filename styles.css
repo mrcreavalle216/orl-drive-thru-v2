@@ -77,9 +77,9 @@
 .landing-cta-secondary{padding:16px 32px;font-size:15px;font-weight:600;background:transparent;color:var(--text);border:1.5px solid rgba(255,255,255,0.2);border-radius:100px;cursor:pointer;transition:all 0.3s;font-family:inherit}.landing-cta-secondary:hover{border-color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.05)}
 
 /* ── Stella Call Modal ────────────────────────────────────── */
-.call-modal-overlay{position:fixed;inset:0;background:rgba(5,5,15,0.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:10000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.call-modal-overlay{position:fixed;inset:0;background:rgba(5,5,15,0.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:10000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;padding:24px}
 .call-modal-overlay.open{opacity:1;pointer-events:all}
-.call-modal{background:rgba(18,18,48,0.98);border:1.5px solid rgba(100,180,255,0.25);border-radius:28px;padding:48px 40px;max-width:440px;width:90%;text-align:center;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.6),0 0 100px rgba(100,180,255,0.08);transform:scale(0.95) translateY(20px);transition:transform 0.35s cubic-bezier(.25,.46,.45,.94);animation:none}
+.call-modal{background:rgba(18,18,48,0.98);border:1.5px solid rgba(100,180,255,0.25);border-radius:28px;padding:48px 40px;max-width:440px;width:90%;max-height:calc(100vh - 48px);overflow-y:auto;text-align:center;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.6),0 0 100px rgba(100,180,255,0.08);transform:scale(0.95) translateY(20px);transition:transform 0.35s cubic-bezier(.25,.46,.45,.94);animation:none}
 .call-modal-overlay.open .call-modal{transform:scale(1) translateY(0)}
 .call-modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(200,210,230,0.6);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;line-height:1}.call-modal-close:hover{background:rgba(255,255,255,0.12);color:#fff}
 .call-modal-avatar{position:relative;width:80px;height:80px;margin:0 auto 20px}
@@ -97,17 +97,12 @@
 
 /* Option picker */
 .call-modal-options{display:flex;gap:12px;margin-bottom:24px}
-.call-option-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 12px;border-radius:16px;background:rgba(100,180,255,0.06);border:1.5px solid rgba(100,180,255,0.18);color:rgba(220,225,240,0.85);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.25s;font-family:inherit}
+.call-option-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 12px;border-radius:16px;background:rgba(100,180,255,0.06);border:1.5px solid rgba(100,180,255,0.18);color:rgba(220,225,240,0.85);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.25s;font-family:inherit;text-decoration:none}
 .call-option-btn:hover{background:rgba(100,180,255,0.12);border-color:rgba(100,180,255,0.4);color:#fff;transform:translateY(-2px);box-shadow:0 8px 30px rgba(100,180,255,0.12)}
 .call-option-btn svg{opacity:0.7;transition:opacity 0.2s}.call-option-btn:hover svg{opacity:1}
-.call-modal-computer,.call-modal-phone-panel{display:none;margin-bottom:16px}
-.call-modal-overlay.show-computer .call-modal-computer{display:block}
+.call-modal-phone-panel{display:none;margin-bottom:16px}
 .call-modal-overlay.show-phone .call-modal-phone-panel{display:block}
-.call-modal-overlay.show-computer .call-modal-options,
 .call-modal-overlay.show-phone .call-modal-options{display:none}
-.call-modal-overlay.show-computer .call-modal{max-width:520px}
-.call-widget-wrap{min-height:400px;margin-bottom:16px;position:relative;display:flex;align-items:center;justify-content:center}
-.call-widget-wrap elevenlabs-convai{width:100%}
 .call-back-btn{background:none;border:none;color:rgba(200,210,230,0.5);font-size:13px;cursor:pointer;padding:8px 0;font-family:inherit;transition:color 0.2s}.call-back-btn:hover{color:#fff}
 
 /* ── Orbital Graphic ──────────────────────────────────────── */

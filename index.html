@@ -7,7 +7,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link rel="stylesheet" href="styles.css">
-<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 </head>
 <body>
 
@@ -260,7 +259,7 @@
           <span>Tell Stella you&rsquo;re interested in refinancing &mdash; she&rsquo;ll walk you through it</span>
         </div>
       </div>
-      <button class="call-back-btn" onclick="var m=document.getElementById('stella-call-modal');m.classList.remove('show-computer','show-phone')">&#8592; Back to options</button>
+      <button class="call-back-btn" onclick="document.getElementById('stella-call-modal').classList.remove('show-phone')">&#8592; Back to options</button>
     </div>
 
     <p class="call-modal-note">Stella handles the full intake &mdash; vehicle info, loan details, credit questions &mdash; the same flow your CES team runs today, fully automated.</p>

@@ -100,7 +100,7 @@ const SYSTEM_PROMPT = `You are the Drive Thru Assistant — a helpful, professio
 - NO foundation fee — the $40,000 foundation fee is Subscription-only
 - $463,000 total build cost (paid at phase delivery milestones): Stella $64,500 + Iris $49,620 + Nora $54,000 + Sage $99,500 + Paige $37,500 + Knox $69,000 + Atlas $31,880 + Maven $57,000
 - ORL owns the codebase after delivery
-- Maintenance: First 2 months FREE, then $600/mo per live agent. Ramps from $1,200/mo (M3, 2 agents) to $4,800/mo at full deployment (M9+, 8 agents)
+- Maintenance: $600/mo per live agent once deployed. Stella's first 2 months (M1-M2) are maintenance-free as an introductory period — all other agents begin maintenance billing at go-live. Ramps from $1,200/mo (M3, 2 agents) to $4,800/mo at full deployment (M9+, 8 agents)
 - Estimated infrastructure (paid by ORL to cloud providers — Azure, Twilio, ElevenLabs, etc.): Ramps from $320/mo (M1-2) → $960/mo (M3-5) → $1,600/mo (M5-7) → $2,240/mo (M7-9) → $2,800/mo (M9-12) → $3,040/mo (Y2+)
 - Estimated token costs at full deployment: ~$985/mo total ($250 Stella + $125 Iris + $50 Nora + $150 Sage + $200 Paige + $110 Knox + $75 Atlas + $25 Maven)
 - ORL is responsible for AI staffing, infrastructure management, and vendor relationships
