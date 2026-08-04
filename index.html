@@ -37,7 +37,7 @@
     <p class="landing-desc">A fleet of 8 specialized AI agents designed to modernize OpenRoad Lending&rsquo;s operations &mdash; from first call to funded loan &mdash; with governance built in and outcomes you can measure.</p>
     <div class="landing-cta-group">
       <a href="#pricing-anchor" class="landing-cta-primary">Explore the Proposal &nbsp;→</a>
-      <button class="landing-cta-secondary" onclick="if(typeof toggleChat==='function')toggleChat()">Talk to Stella</button>
+      <button class="landing-cta-secondary" onclick="document.getElementById('stella-call-modal').classList.add('open')">Talk to Stella</button>
     </div>
   </div>
   <div class="landing-orbital-wrap">
@@ -217,6 +217,37 @@
 </div><!-- end main-content -->
 
 <script src="agents.js"></script>
+<!-- Stella Call Modal -->
+<div id="stella-call-modal" class="call-modal-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="call-modal">
+    <button class="call-modal-close" onclick="this.closest('.call-modal-overlay').classList.remove('open')">&times;</button>
+    <div class="call-modal-avatar">
+      <img src="images/stella.png" alt="Stella">
+      <div class="call-modal-pulse"></div>
+    </div>
+    <h2 class="call-modal-title">Talk to Stella Live</h2>
+    <p class="call-modal-intro">Want to hear Stella in action? Call her directly and have a real conversation about the proposal &mdash; pricing, agents, timelines, anything.</p>
+    <div class="call-modal-phone">
+      <a href="tel:+17623761753" class="call-modal-number">(762) 376-1753</a>
+    </div>
+    <div class="call-modal-steps">
+      <div class="call-step">
+        <span class="call-step-num">1</span>
+        <span>Dial the number above (or tap it on mobile)</span>
+      </div>
+      <div class="call-step">
+        <span class="call-step-num">2</span>
+        <span>Press any key when prompted to start</span>
+      </div>
+      <div class="call-step">
+        <span class="call-step-num">3</span>
+        <span>Ask Stella anything &mdash; pricing, ROI, agent details, comparisons</span>
+      </div>
+    </div>
+    <p class="call-modal-note">Stella knows every number in this proposal. Try asking her to compare the two models or break down the ROI.</p>
+  </div>
+</div>
+
 <script src="particles.js"></script>
 <script src="tour.js"></script>
 <script src="chat-widget.js"></script>

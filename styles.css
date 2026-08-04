@@ -76,6 +76,25 @@
 .landing-cta-primary{padding:16px 32px;font-size:15px;font-weight:600;background:linear-gradient(135deg,var(--accent),var(--accent-light));color:#fff;border:none;border-radius:100px;cursor:pointer;text-decoration:none;transition:all 0.3s;box-shadow:0 4px 24px rgba(50,130,184,0.35);font-family:inherit;display:inline-block}.landing-cta-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(82,180,255,0.5)}
 .landing-cta-secondary{padding:16px 32px;font-size:15px;font-weight:600;background:transparent;color:var(--text);border:1.5px solid rgba(255,255,255,0.2);border-radius:100px;cursor:pointer;transition:all 0.3s;font-family:inherit}.landing-cta-secondary:hover{border-color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.05)}
 
+/* ── Stella Call Modal ────────────────────────────────────── */
+.call-modal-overlay{position:fixed;inset:0;background:rgba(5,5,15,0.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:10000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.call-modal-overlay.open{opacity:1;pointer-events:all}
+.call-modal{background:rgba(18,18,48,0.98);border:1.5px solid rgba(100,180,255,0.25);border-radius:28px;padding:48px 40px;max-width:440px;width:90%;text-align:center;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.6),0 0 100px rgba(100,180,255,0.08);transform:scale(0.95) translateY(20px);transition:transform 0.35s cubic-bezier(.25,.46,.45,.94);animation:none}
+.call-modal-overlay.open .call-modal{transform:scale(1) translateY(0)}
+.call-modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(200,210,230,0.6);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;line-height:1}.call-modal-close:hover{background:rgba(255,255,255,0.12);color:#fff}
+.call-modal-avatar{position:relative;width:80px;height:80px;margin:0 auto 20px}
+.call-modal-avatar img{width:80px;height:80px;border-radius:50%;object-fit:cover;object-position:top;border:3px solid rgba(100,180,255,0.4);box-shadow:0 0 30px rgba(100,180,255,0.2)}
+.call-modal-pulse{position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(100,180,255,0.3);animation:callPulse 2s ease-in-out infinite}
+@keyframes callPulse{0%,100%{transform:scale(1);opacity:0.6}50%{transform:scale(1.12);opacity:0}}
+.call-modal-title{font-size:24px;font-weight:800;color:#fff;margin-bottom:10px;letter-spacing:-0.3px}
+.call-modal-intro{font-size:14px;line-height:1.6;color:rgba(200,210,230,0.6);margin-bottom:24px}
+.call-modal-phone{margin-bottom:28px}
+.call-modal-number{font-size:28px;font-weight:800;color:var(--accent-light);text-decoration:none;letter-spacing:1px;transition:color 0.2s}.call-modal-number:hover{color:#fff}
+.call-modal-steps{text-align:left;display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.call-step{display:flex;align-items:center;gap:14px;font-size:14px;color:rgba(220,225,240,0.85);line-height:1.5}
+.call-step-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(50,130,184,0.3),rgba(92,184,255,0.15));border:1px solid rgba(100,180,255,0.3);color:var(--accent-light);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.call-modal-note{font-size:12px;color:rgba(200,210,230,0.4);line-height:1.5;font-style:italic}
+
 /* ── Orbital Graphic ──────────────────────────────────────── */
 .landing-orbital-wrap{flex:1;display:flex;justify-content:center;align-items:center;position:relative;animation:fadeInUp 1s 0.3s ease both}
 .orbital-svg{width:100%;max-width:520px;aspect-ratio:1;filter:drop-shadow(0 0 40px rgba(100,180,255,0.08))}
