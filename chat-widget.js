@@ -853,11 +853,12 @@ async function sendMessage() {
   stopSpeaking();
 
   input.value = '';
+  lastUserText = text;
   addMessage('user', text);
   showTyping();
   playSound('send');
 
-  // Play filler voice while waiting for response
+  // Play context-aware filler voice while waiting for response
   playFiller();
 
   try {
@@ -956,39 +957,75 @@ async function sendMessage() {
   }
 }
 
-// ─── Voice Fillers (while response generates) ─────────────
+// ─── Voice Fillers (context-aware) ────────────────────────
 
-const FILLER_PHRASES = [
-  "On it.",
-  "One sec.",
-  "Let me pull that up.",
-  "Pulling the numbers.",
-  "Got it, one sec.",
-  "Yep, hang on.",
-  "Oh yeah, let me grab that.",
-  "Give me a beat.",
-  "Right, so...",
-  "Mmhmm, let me check."
-];
+const FILLER_POOLS = {
+  numbers: [
+    "On it, pulling the numbers.",
+    "Let me pull that up.",
+    "Pulling the numbers.",
+    "Got it, one sec.",
+    "Oh yeah, let me grab that.",
+    "Mmhmm, let me check."
+  ],
+  comparison: [
+    "Good question, let me lay that out.",
+    "Oh yeah, this is a good one. Hang on.",
+    "Let me pull that side by side.",
+    "One sec, putting that together."
+  ],
+  agent: [
+    "Oh, let me tell you about them.",
+    "Yeah, one sec.",
+    "Oh I got you on that one.",
+    "Good pick — let me pull the details."
+  ],
+  conversational: [
+    "Ha, love that.",
+    "Right?",
+    "Yeah...",
+    "Mmhmm.",
+    "Ok so..."
+  ],
+  general: [
+    "On it.",
+    "One sec.",
+    "Yep, hang on.",
+    "Give me a beat.",
+    "Right, so...",
+    "Let me think on that."
+  ]
+};
 
 const FILLER_PHRASES_2 = [
   "Almost there.",
   "Ok bear with me.",
-  "Just crunching a couple things.",
   "Alright, pulling it together now.",
   "Hold tight, almost got it.",
   "Gimme one more sec.",
   "Yeah ok, here we go."
 ];
 
+function classifyMessage(text) {
+  const t = text.toLowerCase();
+  if (/\b(cost|price|pricing|how much|total|investment|pay|spend|budget|dollar|expensive|cheap|save|saving|month|year|breakdown|projection|forecast)\b/.test(t)) return 'numbers';
+  if (/\b(compare|versus|vs|difference|better|which one|side by side|subscription or|ownership or|both)\b/.test(t)) return 'comparison';
+  if (/\b(stella|iris|nora|sage|paige|knox|atlas|maven|agent|who does|who handles|tell me about)\b/.test(t)) return 'agent';
+  if (/\b(good|great|nice|cool|awesome|love|like|interesting|wow|ok|sure|yeah|makes sense|got it|feeling|excited|impressed|sounds)\b/.test(t) && t.length < 60) return 'conversational';
+  return 'general';
+}
+
 let fillerPlaying = false;
 let fillerTimer = null;
 let responseReady = false;
+let lastUserText = '';
 
 function playFiller() {
   if (!voiceEnabled) return;
   responseReady = false;
-  const phrase = FILLER_PHRASES[Math.floor(Math.random() * FILLER_PHRASES.length)];
+  const category = classifyMessage(lastUserText);
+  const pool = FILLER_POOLS[category] || FILLER_POOLS.general;
+  const phrase = pool[Math.floor(Math.random() * pool.length)];
   fillerPlaying = true;
   speakText(phrase).then(() => {
     fillerPlaying = false;
