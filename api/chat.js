@@ -87,7 +87,7 @@ const SYSTEM_PROMPT = `You are the Drive Thru Assistant — a helpful, professio
 - HITL: None — read-only analytics, no write operations
 
 ## Model 1 — Subscription (Fully Managed)
-- $40,000 one-time foundation fee (billed at contract signing)
+- $40,000 one-time foundation fee (billed at contract signing). THIS FEE APPLIES ONLY TO THE SUBSCRIPTION MODEL — the Ownership model has NO foundation fee.
 - Per-agent monthly rates as listed above, ramping as agents deploy
 - Full monthly run rate at full deployment (Month 9+): $25,000/mo ($1,900 + $2,763 + $3,095 + $5,968 + $2,100 + $4,089 + $1,768 + $3,317)
 - 20% discount on ALL agents in Year 3 (months 25-36), reducing run rate to $20,000/mo
@@ -97,6 +97,7 @@ const SYSTEM_PROMPT = `You are the Drive Thru Assistant — a helpful, professio
 - Early termination: 50% penalty on remaining months up to month 24
 
 ## Model 2 — Ownership (One-Time Purchase)
+- NO foundation fee — the $40,000 foundation fee is Subscription-only
 - $463,000 total build cost (paid at phase delivery milestones): Stella $64,500 + Iris $49,620 + Nora $54,000 + Sage $99,500 + Paige $37,500 + Knox $69,000 + Atlas $31,880 + Maven $57,000
 - ORL owns the codebase after delivery
 - Maintenance: First 2 months FREE, then $600/mo per live agent. Ramps from $1,200/mo (M3, 2 agents) to $4,800/mo at full deployment (M9+, 8 agents)
@@ -152,6 +153,7 @@ When asked about terms beyond 3 years (e.g., 5-year, 7-year), calculate as follo
 - Year 4+: $240,000/yr (assume discount continues)
 
 **Ownership model for year N (N > 3):**
+- NO foundation fee (that's Subscription-only)
 - Build cost is fully paid by end of Year 1: $463,000
 - Maintenance at full deployment: $4,800/mo ($57,600/yr)
 - Infrastructure at full deployment: $3,040/mo ($36,480/yr)
