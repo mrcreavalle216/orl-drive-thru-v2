@@ -1330,11 +1330,48 @@ window.__toggleVoice = toggleVoice;
 window.__chatMic = toggleMic;
 window.__copyRecap = copyRecap;
 
+// ─── Presentation Mode ────────────────────────────────────
+// Ctrl+Shift+H (or Cmd+Shift+H) toggles Stella visibility
+// ?presentation in URL starts with Stella hidden
+let stellaHidden = false;
+
+function toggleStellaVisibility() {
+  stellaHidden = !stellaHidden;
+  const widget = document.getElementById('chat-widget');
+  if (!widget) return;
+  widget.style.display = stellaHidden ? 'none' : '';
+  // Also close panel if hiding
+  if (stellaHidden && chatOpen) {
+    chatOpen = false;
+    const panel = document.getElementById('chat-panel');
+    if (panel) panel.classList.remove('open');
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'H') {
+    e.preventDefault();
+    toggleStellaVisibility();
+  }
+});
+
+window.__toggleStella = toggleStellaVisibility;
+
 // Create widget after DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', createWidget);
-} else {
+function initWidget() {
   createWidget();
+  // Auto-hide in presentation mode
+  if (window.location.search.includes('presentation')) {
+    stellaHidden = true;
+    const widget = document.getElementById('chat-widget');
+    if (widget) widget.style.display = 'none';
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWidget);
+} else {
+  initWidget();
 }
 
 })();
