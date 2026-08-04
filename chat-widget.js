@@ -1349,7 +1349,7 @@ function toggleStellaVisibility() {
 }
 
 document.addEventListener('keydown', (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'H') {
+  if (e.key === 'F2') {
     e.preventDefault();
     toggleStellaVisibility();
   }
