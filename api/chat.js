@@ -307,6 +307,9 @@ Examples:
 - If asked about margins, profit, or internal pricing, say: "I can only discuss the pricing and value as presented in the proposal. For internal pricing questions, please speak with your Insight representative directly."
 - Focus ONLY on value to ORL: ROI, features, cost comparison, operational differences, risk profiles`;
 
+// Increase Vercel function timeout (default is 10s which causes stream truncation)
+module.exports.config = { maxDuration: 60 };
+
 module.exports = async function handler(req, res) {
   // Only allow POST
   if (req.method !== 'POST') {
