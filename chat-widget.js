@@ -66,6 +66,12 @@ function createWidget() {
   `;
   document.body.appendChild(widget);
 
+  // Create backdrop for display panel
+  const backdrop = document.createElement('div');
+  backdrop.id = 'agent-display-backdrop';
+  backdrop.onclick = () => window.__closeDisplay();
+  document.body.appendChild(backdrop);
+
   // Create the display panel (for tables/charts rendered on the page)
   const display = document.createElement('div');
   display.id = 'agent-display';
@@ -258,6 +264,8 @@ function toggleChat() {
   const badge = document.getElementById('chat-fab-badge');
 
   if (chatOpen) {
+    // Close display panel so they don't overlap
+    if (displayOpen) closeDisplay();
     panel.classList.add('open');
     fab.classList.add('active');
     badge.style.display = 'none';
@@ -366,16 +374,29 @@ function processCommands(text) {
 // ─── Display Panel (renders tables on the page) ─────────────
 
 function showDisplay(content) {
+  // Close chat panel so they don't overlap
+  if (chatOpen) {
+    chatOpen = false;
+    const chatPanel = document.getElementById('chat-panel');
+    const fab = document.getElementById('chat-fab');
+    if (chatPanel) chatPanel.classList.remove('open');
+    if (fab) fab.classList.remove('active');
+  }
+
   const panel = document.getElementById('agent-display');
   const container = document.getElementById('agent-display-content');
+  const bk = document.getElementById('agent-display-backdrop');
   container.innerHTML = formatDisplayContent(content);
   panel.classList.add('open');
+  if (bk) bk.classList.add('open');
   displayOpen = true;
 }
 
 function closeDisplay() {
   const panel = document.getElementById('agent-display');
+  const bk = document.getElementById('agent-display-backdrop');
   panel.classList.remove('open');
+  if (bk) bk.classList.remove('open');
   displayOpen = false;
 }
 
