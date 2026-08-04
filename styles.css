@@ -147,6 +147,9 @@
 /* Input area */
 #chat-input-area{padding:12px 14px;border-top:1px solid rgba(100,180,255,0.1);display:flex;gap:8px;flex-shrink:0}
 #chat-input{flex:1;padding:10px 14px;font-size:13px;background:rgba(255,255,255,0.05);border:1px solid rgba(100,180,255,0.12);border-radius:10px;color:var(--text);outline:none;font-family:inherit;transition:border-color 0.2s}#chat-input::placeholder{color:rgba(200,210,230,0.25)}#chat-input:focus{border-color:rgba(100,180,255,0.3)}
+#chat-mic{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:var(--gray);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;padding:0}#chat-mic:hover{background:rgba(100,180,255,0.12);color:var(--accent-light)}
+#chat-mic.listening{background:rgba(231,76,60,0.2);border-color:rgba(231,76,60,0.4);color:#e74c3c;animation:micPulse 1.5s ease-in-out infinite}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.3)}50%{box-shadow:0 0 0 8px rgba(231,76,60,0)}}
 #chat-send{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-light));color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}#chat-send:hover{transform:scale(1.05)}
 
 /* ── Agent Display Panel (tables rendered on page) ────────── */
