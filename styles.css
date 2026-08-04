@@ -86,7 +86,7 @@
 #chat-fab{width:64px;height:64px;border-radius:50%;background:transparent;border:none;cursor:pointer;position:relative;z-index:2;padding:0;transition:transform 0.3s}
 #chat-fab:hover{transform:scale(1.1)}
 #chat-fab.active{transform:scale(0.9)}
-#chat-fab-avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid rgba(100,180,255,0.4);box-shadow:0 6px 28px rgba(50,130,184,0.4),0 0 40px rgba(82,180,255,0.15);transition:all 0.3s}
+#chat-fab-avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:top;border:3px solid rgba(100,180,255,0.4);box-shadow:0 6px 28px rgba(50,130,184,0.4),0 0 40px rgba(82,180,255,0.15);transition:all 0.3s}
 #chat-fab:hover #chat-fab-avatar{border-color:rgba(100,180,255,0.7);box-shadow:0 8px 36px rgba(82,180,255,0.5),0 0 60px rgba(82,180,255,0.2)}
 #chat-fab-pulse{position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(100,180,255,0.3);animation:fabPulse 2.5s ease-in-out infinite;pointer-events:none}
 #chat-fab.active #chat-fab-pulse{display:none}
@@ -98,7 +98,7 @@
 #chat-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
 #chat-header{padding:14px 16px;border-bottom:1px solid rgba(100,180,255,0.1);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
 #chat-header-title{display:flex;align-items:center;gap:10px}
-.chat-header-img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(100,180,255,0.25);flex-shrink:0}
+.chat-header-img{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid rgba(100,180,255,0.25);flex-shrink:0}
 #chat-close-btn{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:var(--gray);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;line-height:1}#chat-close-btn:hover{background:rgba(255,255,255,0.1);color:#fff}
 
 /* Messages */
@@ -106,7 +106,7 @@
 .chat-msg{display:flex;gap:8px;align-items:flex-end}
 .chat-msg.user{justify-content:flex-end}
 .chat-msg.assistant{justify-content:flex-start}
-.chat-msg-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid rgba(100,180,255,0.2)}
+.chat-msg-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:top;flex-shrink:0;border:1.5px solid rgba(100,180,255,0.2)}
 .chat-msg.user .chat-msg-avatar{display:none}
 .chat-bubble{max-width:82%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.6;word-wrap:break-word;overflow-x:auto}
 .chat-msg.assistant .chat-bubble{background:rgba(100,180,255,0.08);border:1px solid rgba(100,180,255,0.1);color:rgba(220,225,240,0.9);border-bottom-left-radius:4px}
