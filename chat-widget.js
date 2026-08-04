@@ -873,9 +873,19 @@ async function sendMessage() {
     stopFiller();
 
     if (!res.ok) {
-      const err = await res.text();
-      addMessage('assistant', 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.');
-      console.error('Chat API error:', err);
+      let errDetail = '';
+      try {
+        const errBody = await res.json();
+        errDetail = errBody.detail || errBody.error || '';
+        console.error('Chat API error:', res.status, errBody);
+      } catch (_) {
+        errDetail = await res.text().catch(() => '');
+        console.error('Chat API error:', res.status, errDetail);
+      }
+      const statusHint = res.status === 429 ? ' (rate limited — wait a moment)' :
+                          res.status === 401 ? ' (API key issue)' :
+                          res.status >= 500 ? ' (server error)' : '';
+      addMessage('assistant', `Sorry, I hit a snag${statusHint}. Try asking me again in a few seconds.`);
       return;
     }
 

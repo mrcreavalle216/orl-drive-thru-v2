@@ -347,7 +347,7 @@ module.exports = async function handler(req, res) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Anthropic API error:', response.status, errorText);
-      return res.status(502).json({ error: 'AI service error', detail: errorText });
+      return res.status(502).json({ error: 'AI service error', status: response.status, detail: errorText });
     }
 
     // Stream SSE back to the client
