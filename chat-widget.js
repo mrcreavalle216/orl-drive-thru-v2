@@ -21,6 +21,8 @@ let voiceSpeed = 1.15;
 let voiceStyle = 'balanced'; // balanced, warm, energetic
 let isSpeaking = false;
 let scrollReactedSections = new Set();
+let tweakCount = 0;
+let speedDebounce = null;
 
 // ─── Sound Design (Web Audio API) ──────────────────────────
 
@@ -345,7 +347,69 @@ function welcomeNext() {
   }
 }
 
-// Step 2: User adjusts voice, can preview again
+// Step 2: User adjusts voice — auto-speaks a witty reaction on every change
+
+const STYLE_QUIPS = {
+  warm: [
+    "Ooh, warm. Very cozy. Like a podcast host with good vibes.",
+    "Going warm? I see you. Very approachable.",
+    "Warm mode. I sound like I'm about to tell you everything's gonna be okay.",
+    "Warm and fuzzy. This is my therapy voice."
+  ],
+  balanced: [
+    "Back to balanced. Can't go wrong with the classic.",
+    "Balanced — steady, professional, only a little sassy.",
+    "The OG. Sometimes the original is just better.",
+    "Balanced. Like me — stable on the outside, chaos on the inside."
+  ],
+  energetic: [
+    "Energetic! Now we're talking. I've had like three espressos.",
+    "Oh you want the hype version? Let's GO.",
+    "Energetic mode activated. I'm basically a TED talk right now.",
+    "This is my 'closing the deal' voice. You feel that energy?"
+  ]
+};
+
+const SPEED_QUIPS_SLOW = [
+  "Slowing it down. Very dramatic. Very presidential.",
+  "Ok, nice and slow. I'll savor every word for you.",
+  "Going slow? I can be patient. I've got all day.",
+  "This is my 'let that sink in' speed."
+];
+
+const SPEED_QUIPS_FAST = [
+  "Speeding up? We got places to be. I like it.",
+  "Oh we're going fast. Buckle up.",
+  "At this speed I'm basically an auctioneer.",
+  "Alright speedster, try to keep up with me now."
+];
+
+const GENERAL_TWEAK_QUIPS = [
+  "We're getting closer, I can feel it.",
+  "Ok, I think you're just playing with me now.",
+  "Most people accept me on the first try. But I respect the perfectionism.",
+  "Are we there yet? Because I think I already sound amazing.",
+  "I'm starting to think you just like hearing me talk.",
+  "You sure are picky. I appreciate that, actually.",
+  "At this point, I feel like we've really bonded.",
+  "You know what, take your time. This is kind of fun.",
+  "I can do this all day. Literally. I don't get tired.",
+  "Ok now you're just showing off your audio engineering skills."
+];
+
+function getTweakQuip(pool) {
+  tweakCount++;
+  // First few tweaks: use the specific pool
+  if (tweakCount <= 3) {
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+  // After several tweaks: mix in general "you're still going?" quips
+  if (Math.random() < 0.4) {
+    return GENERAL_TWEAK_QUIPS[Math.min(tweakCount - 4, GENERAL_TWEAK_QUIPS.length - 1)];
+  }
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 function setVoiceStyle(style) {
   voiceStyle = style;
   document.querySelectorAll('#voice-style-pills .voice-pill').forEach(p => {
@@ -363,16 +427,39 @@ function setVoiceStyle(style) {
       p.style.boxShadow = 'none';
     }
   });
+
+  // Auto-speak a witty reaction for this style
+  const quip = getTweakQuip(STYLE_QUIPS[style] || STYLE_QUIPS.balanced);
+  speakText(quip);
 }
 
 function setVoiceSpeed(val) {
   voiceSpeed = parseFloat(val);
   const display = document.getElementById('voice-speed-display');
   if (display) display.textContent = voiceSpeed.toFixed(2) + '×';
+
+  // Debounce: wait until user stops sliding, then auto-speak
+  if (speedDebounce) clearTimeout(speedDebounce);
+  speedDebounce = setTimeout(() => {
+    const pool = voiceSpeed <= 1.0 ? SPEED_QUIPS_SLOW : voiceSpeed >= 1.3 ? SPEED_QUIPS_FAST : [
+      "Right in the sweet spot. This feels good.",
+      "Oh that's nice. That's the one.",
+      "See? Perfectly natural. Like I was born at this speed."
+    ];
+    const quip = getTweakQuip(pool);
+    speakText(quip);
+  }, 600);
 }
 
 function previewVoice() {
-  speakText(`How's this? If you want, keep tweaking — I can go all day.`);
+  const previews = [
+    "How's this? If you want, keep tweaking — I can go all day.",
+    "Ok here I am. Sound good? Be honest, I can take it.",
+    "This is me at my current settings. Whatcha think?",
+    "Alright, let me give you the full Stella experience at this setting.",
+    "Test test, one two. Is this the one? Tell me this is the one."
+  ];
+  speakText(previews[Math.floor(Math.random() * previews.length)]);
 }
 
 // Step 3: User clicks "Let's Go" — closing line plays, then transition to main experience
