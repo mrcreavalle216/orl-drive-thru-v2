@@ -389,6 +389,9 @@ async function sendMessage() {
   addMessage('user', text);
   showTyping();
 
+  // Play filler voice while waiting for response
+  playFiller();
+
   try {
     const res = await fetch('/api/chat', {
       method: 'POST',
@@ -462,6 +465,30 @@ async function sendMessage() {
   }
 }
 
+// ─── Voice Fillers (while response generates) ─────────────
+
+const FILLER_PHRASES = [
+  "Great question — let me pull that up for you.",
+  "Ooh, good one. Give me just a second.",
+  "Let me crunch those numbers real quick.",
+  "One moment — I want to give you a sharp answer.",
+  "Love that question. Let me dig in.",
+  "Hang tight — running the analysis now.",
+  "On it — just a moment.",
+  "Let me think about that for a sec.",
+  "Smart question — pulling the data now.",
+  "Give me a beat — I've got this."
+];
+
+let fillerPlaying = false;
+
+function playFiller() {
+  if (!voiceEnabled) return;
+  const phrase = FILLER_PHRASES[Math.floor(Math.random() * FILLER_PHRASES.length)];
+  fillerPlaying = true;
+  speakText(phrase).then(() => { fillerPlaying = false; });
+}
+
 // ─── Voice (ElevenLabs TTS) ────────────────────────────────
 
 function toggleVoice() {
@@ -511,16 +538,19 @@ async function speakText(text) {
 
     audioEl.src = url;
     audioEl.playbackRate = 1.15;
-    audioEl.onended = () => {
-      URL.revokeObjectURL(url);
-      if (currentAudio === url) currentAudio = null;
-    };
 
-    try {
-      await audioEl.play();
-    } catch (playErr) {
-      console.warn('Voice play blocked — click the speaker icon to retry.', playErr.message);
-    }
+    return new Promise((resolve) => {
+      audioEl.onended = () => {
+        URL.revokeObjectURL(url);
+        if (currentAudio === url) currentAudio = null;
+        resolve();
+      };
+      audioEl.onerror = () => resolve();
+      audioEl.play().catch(playErr => {
+        console.warn('Voice play blocked — click the speaker icon to retry.', playErr.message);
+        resolve();
+      });
+    });
   } catch (err) {
     console.warn('TTS error:', err);
   }
