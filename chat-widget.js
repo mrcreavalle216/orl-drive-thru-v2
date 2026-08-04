@@ -433,7 +433,7 @@ function toggleVoice() {
 async function speakText(text) {
   // Stop any currently playing audio
   if (currentAudio) {
-    currentAudio.pause();
+    try { currentAudio.pause(); } catch (_) {}
     currentAudio = null;
   }
 
@@ -451,14 +451,32 @@ async function speakText(text) {
 
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
-    currentAudio = new Audio(url);
-    currentAudio.addEventListener('ended', () => {
-      URL.revokeObjectURL(url);
-      currentAudio = null;
+    const audio = new Audio();
+
+    await new Promise((resolve, reject) => {
+      audio.addEventListener('canplaythrough', resolve, { once: true });
+      audio.addEventListener('error', reject, { once: true });
+      audio.src = url;
+      audio.load();
     });
-    currentAudio.play().catch(e => console.warn('Audio play blocked:', e));
+
+    // Check voice is still enabled (user may have toggled during fetch)
+    if (!voiceEnabled) {
+      URL.revokeObjectURL(url);
+      return;
+    }
+
+    currentAudio = audio;
+    audio.addEventListener('ended', () => {
+      URL.revokeObjectURL(url);
+      if (currentAudio === audio) currentAudio = null;
+    });
+
+    await audio.play();
   } catch (err) {
-    console.warn('TTS error:', err);
+    if (err.name !== 'AbortError') {
+      console.warn('TTS error:', err);
+    }
   }
 }
 
