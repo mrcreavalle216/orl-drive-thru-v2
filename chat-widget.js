@@ -407,16 +407,54 @@ async function sendMessage() {
       return;
     }
 
-    const data = await res.json();
-    let reply = data.content || data.message || 'Sorry, I couldn\'t process that.';
+    // Stream the response
+    const container = document.getElementById('chat-messages');
+    const div = document.createElement('div');
+    div.className = 'chat-msg assistant';
+    div.innerHTML = `<img src="${AVATAR_IMG}" alt="${AGENT_NAME}" class="chat-msg-avatar"><div class="chat-bubble"></div>`;
+    container.appendChild(div);
+    const bubble = div.querySelector('.chat-bubble');
 
-    // Process commands (tab switches, scrolls, display panels)
-    reply = processCommands(reply);
+    let fullText = '';
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let sseBuffer = '';
 
-    addMessage('assistant', reply);
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      sseBuffer += decoder.decode(value, { stream: true });
+      const lines = sseBuffer.split('\n');
+      sseBuffer = lines.pop();
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const payload = line.slice(6);
+          if (payload === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(payload);
+            if (parsed.text) {
+              fullText += parsed.text;
+              bubble.innerHTML = formatText(fullText);
+              container.scrollTop = container.scrollHeight;
+            }
+          } catch (_) {}
+        }
+      }
+    }
+
+    // Store in message history
+    const cleaned = processCommands(fullText);
+    messages.push({ role: 'assistant', content: cleaned });
+    bubble.innerHTML = formatText(cleaned);
+
+    // Hide suggestions after first exchange
+    const suggestions = document.getElementById('chat-suggestions');
+    if (suggestions) suggestions.style.display = 'none';
 
     // Speak the response if voice is enabled
-    if (voiceEnabled) speakText(reply);
+    if (voiceEnabled) speakText(cleaned);
   } catch (err) {
     hideTyping();
     addMessage('assistant', 'Sorry, I\'m having trouble connecting. Please check your connection and try again.');

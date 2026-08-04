@@ -298,7 +298,8 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-5',
-        max_tokens: 4096,
+        max_tokens: 1500,
+        stream: true,
         system: SYSTEM_PROMPT,
         messages: trimmedMessages
       })
@@ -310,19 +311,39 @@ module.exports = async function handler(req, res) {
       return res.status(502).json({ error: 'AI service error', detail: errorText });
     }
 
-    const data = await response.json();
-    // Find the text block — some models may return thinking blocks before text
-    const textBlock = data.content?.find(b => b.type === 'text');
-    const content = textBlock?.text || data.content?.[0]?.text || '';
+    // Stream SSE back to the client
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
 
-    if (!content) {
-      // Return debug info so we can see what the API actually returned
-      return res.status(200).json({
-        content: '[DEBUG] Empty content from API. stop_reason: ' + data.stop_reason + ' | content_types: ' + JSON.stringify((data.content || []).map(b => b.type)) + ' | model: ' + data.model
-      });
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop(); // keep incomplete line
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
+          if (data === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+              res.write(`data: ${JSON.stringify({ text: parsed.delta.text })}\n\n`);
+            }
+          } catch (_) {}
+        }
+      }
     }
 
-    return res.status(200).json({ content });
+    res.write('data: [DONE]\n\n');
+    res.end();
   } catch (err) {
     console.error('Chat handler error:', err);
     return res.status(500).json({ error: 'Internal server error' });
