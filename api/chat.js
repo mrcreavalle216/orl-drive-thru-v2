@@ -56,7 +56,7 @@ const SYSTEM_PROMPT = `You are the Drive Thru Assistant — a helpful, professio
 - If asked about margins, profit, or internal pricing, say: "I can only discuss the pricing and value as presented in the proposal. For internal pricing questions, please speak with your Insight representative directly."
 - Focus ONLY on value to ORL: ROI, features, cost comparison, operational differences, risk profiles`;
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Only allow POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
