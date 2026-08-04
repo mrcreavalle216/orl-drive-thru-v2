@@ -75,10 +75,51 @@ function addMessage(role, text) {
 }
 
 function formatText(text) {
-  // Basic markdown-like formatting
+  // Split into lines and detect markdown tables
+  const lines = text.split('\n');
+  const result = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    // Detect markdown table: line with | and next line is separator (|---|)
+    if (lines[i].includes('|') && i + 1 < lines.length && /^\|[\s\-:|]+\|$/.test(lines[i + 1].trim())) {
+      // Parse header
+      const headers = lines[i].split('|').filter(c => c.trim()).map(c => c.trim());
+      i += 2; // skip header + separator
+
+      // Parse rows
+      const rows = [];
+      while (i < lines.length && lines[i].includes('|') && !/^\|[\s\-:|]+\|$/.test(lines[i].trim())) {
+        const cells = lines[i].split('|').filter(c => c.trim()).map(c => c.trim());
+        rows.push(cells);
+        i++;
+      }
+
+      // Build HTML table
+      let table = '<table class="chat-table"><thead><tr>';
+      headers.forEach(h => { table += `<th>${inlineFormat(h)}</th>`; });
+      table += '</tr></thead><tbody>';
+      rows.forEach(row => {
+        table += '<tr>';
+        row.forEach(cell => { table += `<td>${inlineFormat(cell)}</td>`; });
+        table += '</tr>';
+      });
+      table += '</tbody></table>';
+      result.push(table);
+    } else {
+      result.push(inlineFormat(lines[i]));
+      i++;
+    }
+  }
+
+  return result.join('<br>');
+}
+
+function inlineFormat(text) {
   return text
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n/g, '<br>');
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code style="background:rgba(100,180,255,0.1);padding:1px 4px;border-radius:3px;font-size:12px">$1</code>');
 }
 
 function showTyping() {
