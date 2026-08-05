@@ -98,7 +98,15 @@ const SYSTEM_PROMPT = `You are the Drive Thru Assistant — a helpful, professio
 
 ## Model 2 — Ownership (One-Time Purchase)
 - NO foundation fee — the $40,000 foundation fee is Subscription-only
-- $463,000 total build cost (paid at phase delivery milestones): Stella $64,500 + Iris $49,620 + Nora $54,000 + Sage $99,500 + Paige $37,500 + Knox $69,000 + Atlas $31,880 + Maven $57,000
+- $463,000 total build cost: Stella $64,500 + Iris $49,620 + Nora $54,000 + Sage $99,500 + Paige $37,500 + Knox $69,000 + Atlas $31,880 + Maven $57,000
+- PAYMENT SCHEDULE — $68,000 deferred from early phases to July 2027:
+  - Phase 1 (Month 1, Sep 2026): $32,250 (half of Stella's build — remainder deferred)
+  - Phase 2 (Month 3, Nov 2026): $67,870 (Iris + Nora minus $35,750 deferred)
+  - Phase 3 (Month 5, Jan 2027): $137,000 (Sage + Paige at delivery)
+  - Phase 4 (Month 7, Mar 2027): $100,880 (Knox + Atlas at delivery)
+  - Phase 5 (Month 9, May 2027): $57,000 (Maven at delivery)
+  - Deferred payment (Month 11, Jul 2027): $68,000
+  Total: $463,000. ORL's upfront commitment in month 1 is just $32,250 to get Stella live. The $68,000 deferred to July 2027 means ORL has 10 months of results before that payment comes due
 - ORL owns the codebase after delivery
 - Maintenance: $600/mo per live agent once deployed. Stella's first 2 months (M1-M2) are maintenance-free as an introductory period — all other agents begin maintenance billing at go-live. Ramps from $1,200/mo (M3, 2 agents) to $4,800/mo at full deployment (M9+, 8 agents)
 - Estimated infrastructure (paid by ORL to cloud providers — Azure, Twilio, ElevenLabs, etc.): Ramps from $320/mo (M1-2) → $960/mo (M3-5) → $1,600/mo (M5-7) → $2,240/mo (M7-9) → $2,800/mo (M9-12) → $3,040/mo (Y2+)
@@ -154,7 +162,7 @@ When asked about terms beyond 3 years (e.g., 5-year, 7-year), calculate as follo
 
 **Ownership model for year N (N > 3):**
 - NO foundation fee (that's Subscription-only)
-- Build cost is fully paid by end of Year 1: $463,000
+- Build cost is fully paid by Month 11: $463,000 (milestone payments: $32,250 + $67,870 + $137,000 + $100,880 + $57,000 + $68,000 deferred)
 - Maintenance at full deployment: $4,800/mo ($57,600/yr)
 - Infrastructure at full deployment: $3,040/mo ($36,480/yr)
 - Tokens at full deployment: $985/mo ($11,820/yr)

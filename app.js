@@ -125,10 +125,9 @@ function initDashboard() {
       buildPmt: 0, infra, maint, tokenTotal: 0, total: 0
     };
 
-    // Build payment at milestone (go-live)
-    AGENTS.forEach(a => {
-      if (m === a.goLive) row.buildPmt += a.buildCost;
-    });
+    // Build payment per milestone schedule (front-loaded $100K, remainder back-loaded)
+    const milestone = PAYMENT_SCHEDULE.find(p => p.month === m);
+    if (milestone) row.buildPmt = milestone.amount;
 
     AGENTS.forEach(a => {
       if (m >= a.goLive) {

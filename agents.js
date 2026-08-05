@@ -210,6 +210,19 @@ const FEATURES = {
   }
 };
 
+// ─── Ownership Payment Schedule ─────────────────────────────
+// Per-agent buildCost stays the same ($463K total) — this controls WHEN it's billed.
+// $32,250 deferred from Phase 1 and $35,750 deferred from Phase 2 to July 2027 (M11).
+const PAYMENT_SCHEDULE = [
+  { phase: 1, month: 1,  label: "Phase 1 — Stella",         amount: 32250  },
+  { phase: 2, month: 3,  label: "Phase 2 — Iris, Nora",     amount: 67870  },
+  { phase: 3, month: 5,  label: "Phase 3 — Sage, Paige",    amount: 137000 },
+  { phase: 4, month: 7,  label: "Phase 4 — Knox, Atlas",    amount: 100880 },
+  { phase: 5, month: 9,  label: "Phase 5 — Maven",          amount: 57000  },
+  { phase: 0, month: 11, label: "Deferred — Jul 2027",      amount: 68000  }
+];
+// Verify: 32250 + 67870 + 137000 + 100880 + 57000 + 68000 = 463000
+
 // ─── Constants ──────────────────────────────────────────────
 
 const TOTAL_MONTHS = 36;
