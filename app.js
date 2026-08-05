@@ -360,6 +360,12 @@ function initDashboard() {
       extra = '<br><small style="color:var(--accent)">▸ ' +
         AGENTS.filter(a => a.goLive === row.month).map(a => a.name).join(" + ") + "</small>";
     }
+    // Label deferred payment month
+    const deferred = PAYMENT_SCHEDULE.find(p => p.month === row.month && p.phase === 0);
+    if (deferred) {
+      cls += " phase-start";
+      extra = '<br><small style="color:var(--gold)">▸ Deferred Payment</small>';
+    }
 
     let cells = `<td>${row.month}</td><td>${row.date}${extra}</td>`;
     cells += row.buildPmt > 0 ? `<td style="color:var(--purple);font-weight:700">${fmt(row.buildPmt)}</td>` : '<td class="zero">—</td>';
